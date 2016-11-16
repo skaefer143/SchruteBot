@@ -20,7 +20,7 @@ void InformationManager::update()
 {
 	updateUnitInfo();
 	updateBaseLocationInfo();
-	//print our chokepoint crap
+	/*print our chokepoint crap
 	int chokepointNum = 0;
 	for (std::set<BWTA::Chokepoint*>::iterator it = _mainBaseChokepoints.begin(); it != _mainBaseChokepoints.end(); ++it){
 		chokepointNum++;
@@ -35,7 +35,7 @@ void InformationManager::update()
 		BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
 		BWAPI::Broodwar->printf("First side: x:%d y:%d", point1.x, point1.y);
 		BWAPI::Broodwar->printf("Second side: x:%d y:%d", point2.x, point2.y);
-	}
+	}*/
 }
 
 void InformationManager::updateUnitInfo() 

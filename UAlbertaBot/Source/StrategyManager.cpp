@@ -248,7 +248,6 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     }
 
 
-
     if (shouldExpandNow())
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));

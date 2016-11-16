@@ -47,6 +47,23 @@ void ProductionManager::update()
 {
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
+
+	//if we haven't built our first wall near our main base yet, build it!
+	if (!_madeFirstWall && Config::Strategy::UseWallingAsTerran && BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) {
+		if (Config::Debug::DrawBuildOrderSearchInfo)
+		{
+			BWAPI::Broodwar->drawTextScreen(150, 10, "We are building our wall as a Terran.");
+		}
+
+		//build wall build order
+		//check how big wall needs to be, and then make that many buildings
+		//for now, make 2 sample buildings
+		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+
+		//we have built the wall
+		_madeFirstWall = true;
+	}
     
 	// if nothing is currently building, get a new goal from the strategy manager
 	if ((_queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
@@ -693,4 +710,9 @@ bool ProductionManager::canPlanBuildOrderNow() const
     }
 
     return true;
+}
+
+//get the _madeFirstWall variable, for our building manager
+bool ProductionManager::getMadeFirstWall() const{
+	return _madeFirstWall;
 }
