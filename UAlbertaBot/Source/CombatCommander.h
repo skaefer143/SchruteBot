@@ -14,6 +14,7 @@ class CombatCommander
     BWAPI::Unitset  _combatUnits;
     bool            _initialized;
 
+	void			updateTankDefenseSquad();
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
 	void            updateAttackSquads();
@@ -27,6 +28,8 @@ class CombatCommander
 
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
+
+	BWAPI::Position getChokePointToDefend();
 
     void            initializeSquads();
     void            verifySquadUniqueMembership();

@@ -37,6 +37,13 @@ void CombatCommander::initializeSquads()
         _squadData.addSquad("Drop", Squad("Drop", zealotDrop, DropPriority));
     }
 
+	// add a defensive squad is we are using a tank defence (or walling) strategy
+	if (Config::Strategy::StrategyName == "Terran_TankDefense")
+	{
+		SquadOrder tankDefenceOrder(SquadOrderTypes::Defend, ourBasePosition, 800, "To the wall!");
+		_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenceOrder, BaseDefensePriority));
+	}
+
     _initialized = true;
 }
 
@@ -65,6 +72,7 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
         updateIdleSquad();
         updateDropSquads();
         updateScoutDefenseSquad();
+		updateTankDefenseSquad();
 		updateDefenseSquads();
 		updateAttackSquads();
 	}
@@ -232,6 +240,48 @@ void CombatCommander::updateScoutDefenseSquad()
         scoutDefenseSquad.clear();
     }
 }
+
+
+void CombatCommander::updateTankDefenseSquad()
+{
+	if (Config::Strategy::StrategyName != "Terran_TankDefense")
+	{
+		return;
+	}
+
+	Squad & tankDSquad = _squadData.getSquad("TankDefense");
+
+	// figure out how many units the tank squad needs
+	int tankDefenseSize = 6;
+	auto & tankUnits = tankDSquad.getUnits();
+
+	for (auto & unit : tankUnits)
+	{
+		tankDefenseSize -= 1;
+	}
+
+	// if there are still units to be added to the drop squad, do it
+	if (tankDefenseSize > 0)
+	{
+		// take our first amount of tanks and add them to the tank squad
+		for (auto & unit : _combatUnits)
+		{
+			// get tanks and assign them to the squad
+			if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode && _squadData.canAssignUnitToSquad(unit, tankDSquad)){
+				_squadData.assignUnitToSquad(unit, tankDSquad);
+				tankDefenseSize -= 1;
+			}
+		}
+	}
+	// otherwise the tank squad is full, so execute the order
+	else
+	{
+		SquadOrder tankDefenceOrder(SquadOrderTypes::Defend, getChokePointToDefend(), 800, "Defending the wall!");
+		tankDSquad.setSquadOrder(tankDefenceOrder);
+	}
+}
+
+
 
 void CombatCommander::updateDefenseSquads() 
 {
@@ -457,6 +507,12 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 BWAPI::Position CombatCommander::getDefendLocation()
 {
 	return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
+}
+
+BWAPI::Position CombatCommander::getChokePointToDefend()
+{
+	// for now, only return the nearest chokepoint. will try for multiple chokepoints later.
+	return BWTA::getNearestChokepoint(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
 }
 
 void CombatCommander::drawSquadInformation(int x, int y)
