@@ -8,6 +8,9 @@ InformationManager::InformationManager()
     , _enemy(BWAPI::Broodwar->enemy())
 {
 	initializeRegionInformation();
+    BWTA::BaseLocation *here = BWTA::getStartLocation(BWAPI::Broodwar->self());
+    BWTA::getNearestChokepoint(here->getTilePosition())->getCenter();
+    box = buildBoundingBox(BWAPI::TilePosition(BWTA::getNearestChokepoint(here->getTilePosition())->getCenter()));
 }
 
 InformationManager & InformationManager::Instance() 
@@ -579,4 +582,43 @@ bool InformationManager::enemyHasCloakedUnits()
     }
 
 	return false;
+}
+
+
+BoundingBox InformationManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
+    BoundingBox box;
+    // a 10 by 10 tile array including choke tile
+    int startTileX = chokePoint.x - 9;
+    int startTileY = chokePoint.y - 9;
+    int endTileX = chokePoint.x + 10;
+    int endTileY = chokePoint.y + 10;
+
+    if (startTileX < 0){
+        startTileX = 0;
+    }
+
+    if (startTileY < 0){
+        startTileY = 0;
+    }
+
+    int width = BWAPI::Broodwar->mapWidth();
+    int height = BWAPI::Broodwar->mapHeight();
+    if (endTileX >= width){
+        endTileX = width - 1;
+    }
+
+    if (endTileY >= height){
+        endTileY = height - 1;
+    }
+
+    box.start = BWAPI::TilePosition(startTileX, startTileY);
+    box.end = BWAPI::TilePosition(endTileX, endTileY);
+    for (int i = 0; i < 10; ++i){
+        for (int j = 0; j < 10; ++j){
+            box.container[i][j] = 1;
+        }
+    }
+
+    return box;
+
 }

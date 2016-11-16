@@ -12,8 +12,18 @@ namespace UAlbertaBot
 struct BaseInfo;
 typedef std::vector<BaseInfo> BaseInfoVector;
 
+
+struct BoundingBox{
+    BWAPI::TilePosition start;
+    BWAPI::TilePosition end;
+    int container[10][10];
+};
 class InformationManager 
 {
+
+    BoundingBox     buildBoundingBox(BWAPI::TilePosition chokePoint);
+    BoundingBox     box;
+
     InformationManager();
     
     BWAPI::Player       _self;

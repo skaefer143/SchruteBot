@@ -10,7 +10,6 @@ BuildingManager::BuildingManager()
     , _reservedMinerals(0)
     , _reservedGas(0)
 {
-
 }
 
 // gets called every frame from GameCommander
