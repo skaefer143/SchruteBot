@@ -5,3 +5,16 @@ Need to adjust Build Order (I think?) to build more buildings, and place them at
 Then, we figure out how to make the AI place the buidlings at the choke point on our side, so that we effectively wall our base.
 Also, if under attack, get our SCV's to help repair our buildings at the chokepoint.
 
+
+
+Storm's coding notes:
+Goal for now: see if I'm able to get workers to randomly place down a supply depot and barracks to simulate a wall.
+
+Added buildings for walling into queue in ProductionManagers update() function, if we have UseWallingAsTerran set in the 
+Config.cpp file. ManageBuildOrderQueue() figures out if we have a worker available to build our building. 
+If we can make it and there is a worker, it creates the building in the create() function. 
+Figuring out how to set where these buildings should be built. Getting building location now is done in the predictWorkerMovement()
+funciton, and gets the proposed building location from BuildingManager::Instance().getBuildingLocation(b), with b
+as the building we want. predictWorkerMovement() 
+
+Perhaps a building should have a partOfWall attribute, so we know where to find it's placement if it is part of a wall?
