@@ -247,7 +247,24 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
-
+	// add Science Vessel to the goal if the enemy has cloaked units
+	if (InformationManager::Instance().enemyHasCloakedUnits())
+	{
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Science_Facility) == 0){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Facility, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Science_Facility) > 0 && BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Starport) == 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Starport, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Starport) > 0 && BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Control_Tower) == 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Control_Tower, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Control_Tower) > 0){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
+		}
+	}
 
     if (shouldExpandNow())
     {

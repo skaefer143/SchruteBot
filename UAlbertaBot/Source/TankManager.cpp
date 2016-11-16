@@ -17,7 +17,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
-    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().minRange() + 64;
+    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().minRange() + 45;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
