@@ -17,7 +17,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
-    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon.minRange() + 15;
+    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().minRange() + 64;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
@@ -44,7 +44,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 			// if there are targets
 			if (!tankTargets.empty())
 			{
-				// find the best target for this zealot
+				// find the best target for this tank
 				BWAPI::Unit target = getTarget(tank, tankTargets);
 
                 if (target && Config::Debug::DrawUnitTargetInfo) 
@@ -55,12 +55,15 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                 // if we are within siege range, but beyond the minimum range, siege up
                 if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint && 
                     tank->getDistance(target) > siegeTankMinRange)
+				//if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
                 {
                     tank->siege();
                 }
                 // otherwise unsiege and move
-                else if ((!target || (tank->getDistance(target) > siegeTankRange) || 
-                    tank->getDistance(target) < siegeTankMinRange) && tank->canUnsiege())
+                //else if ((!target || (tank->getDistance(target) > siegeTankRange || 
+                //    tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
+				//else if (!target || (tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+				else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
                 {
                     tank->unsiege();
                 }
