@@ -17,11 +17,12 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
+    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon.minRange() + 15;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
 
-	// for each zealot
+	// for each tank
 	for (auto & tank : tanks)
 	{
 		// train sub units such as scarabs or interceptors
@@ -51,13 +52,15 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		            BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
 
-                // if we are within siege range, siege up
-                if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
+                // if we are within siege range, but beyond the minimum range, siege up
+                if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint && 
+                    tank->getDistance(target) > siegeTankMinRange)
                 {
                     tank->siege();
                 }
-                // otherwise unsiege and move in
-                else if ((!target || tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+                // otherwise unsiege and move
+                else if ((!target || (tank->getDistance(target) > siegeTankRange) || 
+                    tank->getDistance(target) < siegeTankMinRange) && tank->canUnsiege())
                 {
                     tank->unsiege();
                 }
