@@ -68,5 +68,7 @@ public:
     void                    drawMapInformation();
 
     const UnitData &        getUnitData(BWAPI::Player player) const;
+
+	std::set<BWTA::Chokepoint*>	_mainBaseChokepoints;
 };
 }
