@@ -45,6 +45,16 @@ void ProductionManager::performBuildOrderSearch()
 
 void ProductionManager::update() 
 {
+	//turn off currently building wall, if we have built the wall
+	//needs to come before manageBuildOrderQueue(), so we know whether or not walling is done.
+	MetaType topObject = _queue.getHighestPriorityItem().metaType;
+	if (_currentlyBuildingWall && !_madeFirstWall &&
+		(topObject.getUnitType != BWAPI::UnitTypes::Terran_Barracks || topObject.getUnitType != BWAPI::UnitTypes::Terran_Supply_Depot)){
+		//we have finished building the wall!
+		_currentlyBuildingWall = false;
+		_madeFirstWall = true;
+	}
+
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
 
@@ -55,14 +65,13 @@ void ProductionManager::update()
 			BWAPI::Broodwar->drawTextScreen(150, 10, "We are building our wall as a Terran.");
 		}
 
+		_currentlyBuildingWall = true;
+
 		//build wall build order
 		//check how big wall needs to be, and then make that many buildings
 		//for now, make 2 sample buildings
 		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
 		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
-
-		//we have built the wall
-		_madeFirstWall = true;
 	}
     
 	// if nothing is currently building, get a new goal from the strategy manager
@@ -358,8 +367,17 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
         && !t.getUnitType().isAddon())
     {
+		if (_currentlyBuildingWall){
+			//send the building task, but with our wall build location!
+			//BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
+			//uncomment when WallingManager works!
+
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		}
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		else {
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		}
     }
     else if (t.getUnitType().isAddon())
     {
@@ -479,8 +497,15 @@ void ProductionManager::predictWorkerMovement(const Building & b)
     }
 
 	// get a possible building location for the building
-	if (!_haveLocationForThisBuilding)
-	{
+	if (!_haveLocationForThisBuilding && _currentlyBuildingWall){
+		//_predictedTilePosition = WallingManager::Instance().getBuildingLocation(b);
+		//When we can get the wall building locations from WallingManager, uncomment the code.
+		//for now, give sample location, where to build the wall
+
+		//side note: WallingManagers getBuildingLocation
+
+	}
+	if (!_haveLocationForThisBuilding){
 		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
 	}
 
@@ -526,6 +551,11 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 
 		// tell the worker manager to move this worker
 		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+
+		if (_currentlyBuildingWall){
+			//if this tile is a valid build location, make it our wall building location!
+			_wallBuildingLocation = _predictedTilePosition;
+		}
 	}
 }
 
@@ -715,4 +745,9 @@ bool ProductionManager::canPlanBuildOrderNow() const
 //get the _madeFirstWall variable, for our building manager
 bool ProductionManager::getMadeFirstWall() const{
 	return _madeFirstWall;
+}
+
+//get the _currentlyBuildingWall variable, for our building manager
+bool ProductionManager::getCurrentlyBuildingWall() const{
+	return _currentlyBuildingWall;
 }
