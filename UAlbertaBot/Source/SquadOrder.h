@@ -7,7 +7,7 @@ namespace UAlbertaBot
 
 namespace SquadOrderTypes
 {
-    enum { None, Idle, Attack, Defend, Regroup, Drop, SquadOrderTypes };
+    enum { None, Idle, Attack, Defend, Harrass, Regroup, Drop, SquadOrderTypes };
 }
 
 class SquadOrder

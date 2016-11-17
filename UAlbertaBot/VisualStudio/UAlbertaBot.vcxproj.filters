@@ -153,6 +153,9 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\VultureManager.cpp">
+      <Filter>game\combat\micro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -266,9 +269,6 @@
     <ClInclude Include="..\Source\UnitUtil.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\TankManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\MedicManager.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
@@ -277,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\GameHistory.hpp">
       <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TankManager.h">
+      <Filter>game\combat\micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\VultureManager.h">
+      <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

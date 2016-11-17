@@ -15,6 +15,21 @@ void AutoObserver::onFrame()
 {
     bool pickUnitToFollow = !_observerFollowingUnit || !_observerFollowingUnit->exists() || (BWAPI::Broodwar->getFrameCount() - _cameraLastMoved > _unitFollowFrames);
 
+	if (pickUnitToFollow)
+	{
+		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+		{
+			if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
+			{
+				_cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+				_unitFollowFrames = 6;
+				_observerFollowingUnit = unit;
+				pickUnitToFollow = false;
+				break;
+			}
+		}
+	}
+
     if (pickUnitToFollow)
     {
 	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())

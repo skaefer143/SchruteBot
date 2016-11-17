@@ -95,7 +95,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 	}
 }
 
-// get a target for the zealot to attack
+// get a target for the tank to attack
 BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targets)
 {
 	int bestPriorityDistance = 1000000;
