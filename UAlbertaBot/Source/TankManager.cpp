@@ -41,6 +41,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
         {
+			//BWAPI::Broodwar->printf("this tank is not ordered to defend the wall");
 			// if there are targets
 			if (!tankTargets.empty())
 			{
@@ -100,7 +101,9 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		}
 		// if order is to defend the wall
 		if (order.getType() == SquadOrderTypes::WallDefend)
+
 		{
+			//BWAPI::Broodwar->printf("this tank is ordered to defend the wall");
 			// if there are targets
 			if (!tankTargets.empty())
 			{
@@ -138,8 +141,9 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 			else
 			{
 				// if we're not near the order position
-				if (tank->getDistance(order.getPosition()) > 10)
+				if (tank->getDistance(order.getPosition()) > 500)
 				{
+					//BWAPI::Broodwar->printf("tank is at %d , %d and is moving to %d , %d", tank->getPosition().x, tank->getPosition().y, order.getPosition().x, order.getPosition().y);
 					if (tank->canUnsiege())
 					{
 						tank->unsiege();
@@ -147,10 +151,11 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 					else
 					{
 						// move to it
-						Micro::SmartAttackMove(tank, order.getPosition());
+						Micro::SmartMove(tank, order.getPosition());
 					}
 				}
 				else{
+					//BWAPI::Broodwar->printf("tank has arrived");
 					if (tank->canSiege()){
 						tank->siege();
 					}
