@@ -247,6 +247,8 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 8));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+		//goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
 	}
     else
     {

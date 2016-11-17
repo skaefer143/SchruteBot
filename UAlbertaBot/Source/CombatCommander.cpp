@@ -8,6 +8,7 @@ const size_t AttackPriority = 1;
 const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
+const size_t TankDefensePriority = 5;
 
 CombatCommander::CombatCommander() 
     : _initialized(false)
@@ -40,8 +41,8 @@ void CombatCommander::initializeSquads()
 	// add a defensive squad is we are using a tank defence (or walling) strategy
 	if (Config::Strategy::StrategyName == "Terran_TankDefense")
 	{
-		SquadOrder tankDefenceOrder(SquadOrderTypes::Defend, ourBasePosition, 800, "To the wall!");
-		_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenceOrder, BaseDefensePriority));
+		SquadOrder tankDefenceOrder(SquadOrderTypes::WallDefend, ourBasePosition, 800, "To the wall!");
+		_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenceOrder, TankDefensePriority));
 	}
 
     _initialized = true;
@@ -249,10 +250,10 @@ void CombatCommander::updateTankDefenseSquad()
 		return;
 	}
 
-	Squad & tankDSquad = _squadData.getSquad("TankDefense");
+	Squad & tankDSquad = _squadData.getSquad("TankDefenders");
 
 	// figure out how many units the tank squad needs
-	int tankDefenseSize = 6;
+	int tankDefenseSize = 4;
 	auto & tankUnits = tankDSquad.getUnits();
 
 	for (auto & unit : tankUnits)
@@ -276,7 +277,7 @@ void CombatCommander::updateTankDefenseSquad()
 	// otherwise the tank squad is full, so execute the order
 	else
 	{
-		SquadOrder tankDefenceOrder(SquadOrderTypes::Defend, getChokePointToDefend(), 800, "Defending the wall!");
+		SquadOrder tankDefenceOrder(SquadOrderTypes::WallDefend, getChokePointToDefend(), 800, "Defending the wall!");
 		tankDSquad.setSquadOrder(tankDefenceOrder);
 	}
 }

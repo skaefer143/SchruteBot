@@ -98,6 +98,66 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 			}
 		}
+		// if order is to defend the wall
+		if (order.getType() == SquadOrderTypes::WallDefend)
+		{
+			// if there are targets
+			if (!tankTargets.empty())
+			{
+				// find the best target for this tank
+				BWAPI::Unit target = getTarget(tank, tankTargets);
+
+				if (target && Config::Debug::DrawUnitTargetInfo)
+				{
+					BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
+				}
+
+				// if we are within siege range, but beyond the minimum range, siege up
+				if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint &&
+					tank->getDistance(target) > siegeTankMinRange)
+					//if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
+				{
+					tank->siege();
+				}
+				// otherwise unsiege and move
+				
+				//else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
+				//{
+				////	tank->unsiege();
+				//}
+
+
+				// if we're in siege mode just attack the target
+				if (tank->isSieged())
+				{
+					Micro::SmartAttackUnit(tank, target);
+				}
+				
+			}
+			// if there are no targets
+			else
+			{
+				// if we're not near the order position
+				if (tank->getDistance(order.getPosition()) > 10)
+				{
+					if (tank->canUnsiege())
+					{
+						tank->unsiege();
+					}
+					else
+					{
+						// move to it
+						Micro::SmartAttackMove(tank, order.getPosition());
+					}
+				}
+				else{
+					if (tank->canSiege()){
+						tank->siege();
+					}
+				}
+			}
+		}
+
 	}
 }
 

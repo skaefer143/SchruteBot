@@ -19,6 +19,5 @@ public:
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
 	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets);
 
-	void setDeffensive(bool deffensive);
 };
 }
