@@ -190,15 +190,35 @@ void ProductionManager::manageBuildOrderQueue()
 		// if the next item in the list is a building and we can't yet make it
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
+			//get a tile near our choke point, and make that our desired build position
+			BWAPI::Broodwar->printf("Attempting to make building for our wall.");
+			std::set<BWTA::Chokepoint*>::iterator it = InformationManager::Instance()._mainBaseChokepoints.begin();
+			std::vector<BWAPI::TilePosition> tilesNearChokepoint = MapTools::Instance().getClosestTilesTo((*it)->getCenter());
+			//tiles near chokepoint is broken right now, so weird. Doesn't have anything in it.
+
 			// construct a temporary building object
-			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
-            b.isGasSteal = currentItem.isGasSteal;
+			if (_currentlyBuildingWall && tilesNearChokepoint.size() > 0){
+				BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(tilesNearChokepoint.at(0));
+				//need to cast to a tile position http://day9.tv/d/heinermann/tileposition-and-position/
+				Building b(currentItem.metaType.getUnitType(), desiredPosition);
+				b.isGasSteal = currentItem.isGasSteal;
 
-			// set the producer as the closest worker, but do not set its job yet
-			producer = WorkerManager::Instance().getBuilder(b, false);
+				// set the producer as the closest worker, but do not set its job yet
+				producer = WorkerManager::Instance().getBuilder(b, false);
 
-			// predict the worker movement to that building location
-			predictWorkerMovement(b);
+				// predict the worker movement to that building location
+				predictWorkerMovement(b);
+
+			} else {
+				Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+				b.isGasSteal = currentItem.isGasSteal;
+				// set the producer as the closest worker, but do not set its job yet
+				producer = WorkerManager::Instance().getBuilder(b, false);
+
+				// predict the worker movement to that building location
+				predictWorkerMovement(b);
+			}
+           
 		}
 
 		// if we can make the current item
@@ -373,7 +393,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
     {
 		if (_currentlyBuildingWall && _buildingsInWallToBuild > 0){
 			//send the building task, but with our wall build location!
-			
+			BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
 			_buildingsInWallToBuild--;
 		}
@@ -500,25 +520,18 @@ void ProductionManager::predictWorkerMovement(const Building & b)
     }
 
 	// get a possible building location for the building
-	if (!_haveLocationForThisBuilding && _currentlyBuildingWall){
+	//if (!_haveLocationForThisBuilding && _currentlyBuildingWall){
 		//_predictedTilePosition = WallingManager::Instance().getBuildingLocation(b);
 		//When we can get the wall building locations from WallingManager, uncomment the code.
 		//for now, give sample location, where to build the wall
 
 		//side note: WallingManagers getBuildingLocation should return where that specific building in the wall should be built
 
-		std::set<BWTA::Chokepoint*>::iterator it = InformationManager::Instance()._mainBaseChokepoints.begin();
-		std::vector<BWAPI::TilePosition> nearestTilesToChokepoint = MapTools::Instance().getClosestTilesTo((*it)->getCenter());
-		std::vector<BWAPI::TilePosition>::iterator tileIT;
-		for (tileIT = nearestTilesToChokepoint.begin(); tileIT != nearestTilesToChokepoint.end(); tileIT++){
-			if ((*tileIT) != BWAPI::TilePositions::None){
-				BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", (*tileIT).x, (*tileIT).y);
-				_predictedTilePosition = (*tileIT);
-				_wallBuildingLocation = (*tileIT);
-				break;
-			}
-		}
-	}
+
+		//sample location is given in the manageBuildOrderQueue()
+
+
+	//} 
 	if (!_haveLocationForThisBuilding){
 		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
 	}
@@ -569,6 +582,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 		if (_currentlyBuildingWall){
 			//if this tile is a valid build location, make it our wall building location!
 			_wallBuildingLocation = _predictedTilePosition;
+			BWAPI::Broodwar->printf("Set wall building location to coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
 		}
 	}
 }
