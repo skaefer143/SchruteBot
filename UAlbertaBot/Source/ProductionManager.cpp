@@ -6,6 +6,9 @@ ProductionManager::ProductionManager()
 	: _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
+	, _madeFirstWall(false)
+	, _currentlyBuildingWall(false)
+	, _buildingsInWallToBuild(0)
 {
     setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 }
@@ -45,11 +48,11 @@ void ProductionManager::performBuildOrderSearch()
 
 void ProductionManager::update() 
 {
+	
+
 	//turn off currently building wall, if we have built the wall
 	//needs to come before manageBuildOrderQueue(), so we know whether or not walling is done.
-	MetaType topObject = _queue.getHighestPriorityItem().metaType;
-	if (_currentlyBuildingWall && !_madeFirstWall &&
-		(topObject.getUnitType != BWAPI::UnitTypes::Terran_Barracks || topObject.getUnitType != BWAPI::UnitTypes::Terran_Supply_Depot)){
+	if (_currentlyBuildingWall && !_madeFirstWall && _buildingsInWallToBuild <= 0){
 		//we have finished building the wall!
 		_currentlyBuildingWall = false;
 		_madeFirstWall = true;
@@ -59,10 +62,10 @@ void ProductionManager::update()
 	manageBuildOrderQueue();
 
 	//if we haven't built our first wall near our main base yet, build it!
-	if (!_madeFirstWall && Config::Strategy::UseWallingAsTerran && BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) {
-		if (Config::Debug::DrawBuildOrderSearchInfo)
+	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran && BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) {
+		if (Config::Debug::DrawProductionInfo)
 		{
-			BWAPI::Broodwar->drawTextScreen(150, 10, "We are building our wall as a Terran.");
+			BWAPI::Broodwar->printf("We are building our wall as a Terran.");
 		}
 
 		_currentlyBuildingWall = true;
@@ -72,6 +75,7 @@ void ProductionManager::update()
 		//for now, make 2 sample buildings
 		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
 		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+		_buildingsInWallToBuild = 2;
 	}
     
 	// if nothing is currently building, get a new goal from the strategy manager
@@ -367,12 +371,11 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
         && !t.getUnitType().isAddon())
     {
-		if (_currentlyBuildingWall){
+		if (_currentlyBuildingWall && _buildingsInWallToBuild > 0){
 			//send the building task, but with our wall build location!
-			//BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
-			//uncomment when WallingManager works!
-
-			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+			
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
+			_buildingsInWallToBuild--;
 		}
         // send the building task to the building manager
 		else {
@@ -502,8 +505,19 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 		//When we can get the wall building locations from WallingManager, uncomment the code.
 		//for now, give sample location, where to build the wall
 
-		//side note: WallingManagers getBuildingLocation
+		//side note: WallingManagers getBuildingLocation should return where that specific building in the wall should be built
 
+		std::set<BWTA::Chokepoint*>::iterator it = InformationManager::Instance()._mainBaseChokepoints.begin();
+		std::vector<BWAPI::TilePosition> nearestTilesToChokepoint = MapTools::Instance().getClosestTilesTo((*it)->getCenter());
+		std::vector<BWAPI::TilePosition>::iterator tileIT;
+		for (tileIT = nearestTilesToChokepoint.begin(); tileIT != nearestTilesToChokepoint.end(); tileIT++){
+			if ((*tileIT) != BWAPI::TilePositions::None){
+				BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", (*tileIT).x, (*tileIT).y);
+				_predictedTilePosition = (*tileIT);
+				_wallBuildingLocation = (*tileIT);
+				break;
+			}
+		}
 	}
 	if (!_haveLocationForThisBuilding){
 		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
