@@ -10,6 +10,8 @@ Also, if under attack, get our SCV's to help repair our buildings at the chokepo
 Storm's coding notes:
 Goal for now: see if I'm able to get workers to randomly place down a supply depot and barracks to simulate a wall.
 
+
+
 Added buildings for walling into queue in ProductionManagers update() function, if we have UseWallingAsTerran set in the 
 Config.cpp file. ManageBuildOrderQueue() figures out if we have a worker available to build our building. 
 If we can make it and there is a worker, it creates the building in the create() function. 
@@ -25,3 +27,11 @@ from our desired build location, that is a valid build location.
 
 If we are building a wall, I have sample code in the predictWorkerMovement() function that would be able to 
 return the correct position of each building in the wall.
+
+
+
+Update: 11/21
+For some reason, even by just trying to put building down near our base (even though we are attempting
+to put it in another region, but anyways), the BuildingPlacer::GetBuildingLocationNear function is not working 
+because the closestToBuilding vector is empty. The MapTools::Instance().getClosestTilesTo function is returning
+a location that is invalid. No idea why!!

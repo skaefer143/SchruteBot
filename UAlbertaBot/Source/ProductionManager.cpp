@@ -395,7 +395,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
     {
 		if (_currentlyBuildingWall && _buildingsInWallToBuild > 0){
 			//send the building task, but with our wall build location!
-			BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
+			BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", BWAPI::Position(_wallBuildingLocation).x, BWAPI::Position(_wallBuildingLocation).y);
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
 			_buildingsInWallToBuild--;
 		}
