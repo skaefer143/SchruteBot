@@ -190,16 +190,18 @@ void ProductionManager::manageBuildOrderQueue()
 		// if the next item in the list is a building and we can't yet make it
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
-			//get a tile near our choke point, and make that our desired build position
-			BWAPI::Broodwar->printf("Attempting to make building for our wall.");
+			/*get a tile in the region after our main base chokepoint, and make that our desired build position
+			//CAN BE DELETED LATER, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
 			std::set<BWTA::Chokepoint*>::iterator it = InformationManager::Instance()._mainBaseChokepoints.begin();
-			std::vector<BWAPI::TilePosition> tilesNearChokepoint = MapTools::Instance().getClosestTilesTo((*it)->getCenter());
-			//tiles near chokepoint is broken right now, so weird. Doesn't have anything in it.
+			BWTA::Region* otherRegion = (*it)->getRegions().first; //gets second region beyond our chokepoint
+			BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
+			BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
+			//might be broken
 
 			// construct a temporary building object
-			if (_currentlyBuildingWall && tilesNearChokepoint.size() > 0){
-				BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(tilesNearChokepoint.at(0));
+			if (_currentlyBuildingWall){
 				//need to cast to a tile position http://day9.tv/d/heinermann/tileposition-and-position/
+				BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
 				Building b(currentItem.metaType.getUnitType(), desiredPosition);
 				b.isGasSteal = currentItem.isGasSteal;
 
@@ -209,7 +211,7 @@ void ProductionManager::manageBuildOrderQueue()
 				// predict the worker movement to that building location
 				predictWorkerMovement(b);
 
-			} else {
+			} else {*/
 				Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
 				b.isGasSteal = currentItem.isGasSteal;
 				// set the producer as the closest worker, but do not set its job yet
@@ -217,7 +219,7 @@ void ProductionManager::manageBuildOrderQueue()
 
 				// predict the worker movement to that building location
 				predictWorkerMovement(b);
-			}
+			//}
            
 		}
 
