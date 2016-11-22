@@ -60,7 +60,7 @@ void ProductionManager::update()
 
 	//if we haven't built our first wall near our main base yet, build it!
 	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
-		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 8) {
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
 		if (Config::Debug::DrawProductionInfo)
 		{
 			BWAPI::Broodwar->printf("We are building our wall as a Terran.");
@@ -401,7 +401,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
 			BWAPI::Broodwar->printf("Predicted build tile location was: x:%d y:%d", BWAPI::Position(_predictedTilePosition).x, BWAPI::Position(_predictedTilePosition).y);
 			BWAPI::Broodwar->printf("Our starting tile's position location was: x:%d y:%d", BWAPI::Position(startTile).x, BWAPI::Position(startTile).y); 
 			//predicted tile position and start point are not the same, messes up the getClosestTileTo function down the line. wtf
-			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal); //PROBLEM CODE
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal, true); //PROBLEM CODE
 			_buildingsInWallToBuild--;
 		}
         // send the building task to the building manager

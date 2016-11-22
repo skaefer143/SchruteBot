@@ -25,6 +25,7 @@ public:
     bool                    isGasSteal;
 	bool                    buildCommandGiven;
 	bool                    underConstruction;
+	bool					isPartOfWall;
 
 	Building() 
 		: desiredPosition   (0,0)
@@ -38,6 +39,7 @@ public:
         , buildCommandGiven (false)
         , underConstruction (false) 
         , isGasSteal        (false)
+		, isPartOfWall		(false)
     {} 
 
 	// constructor we use most often
@@ -53,7 +55,23 @@ public:
         , buildCommandGiven (false)
         , underConstruction (false) 
         , isGasSteal        (false)
+		, isPartOfWall		(false)
     {}
+
+	Building(BWAPI::UnitType t, BWAPI::TilePosition desired, bool wallingBool)
+		: desiredPosition(desired)
+		, finalPosition(0, 0)
+		, position(0, 0)
+		, type(t)
+		, buildingUnit(nullptr)
+		, builderUnit(nullptr)
+		, lastOrderFrame(0)
+		, status(BuildingStatus::Unassigned)
+		, buildCommandGiven(false)
+		, underConstruction(false)
+		, isGasSteal(false)
+		, isPartOfWall(wallingBool)
+	{}
 
 	// equals operator
 	bool operator==(const Building & b) 

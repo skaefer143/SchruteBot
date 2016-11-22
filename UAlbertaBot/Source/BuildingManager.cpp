@@ -88,13 +88,19 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 
             b.builderUnit = workerToAssign;
 
-            BWAPI::TilePosition testLocation = getBuildingLocation(b);
-            if (!testLocation.isValid())
-            {
-                continue;
-            }
+			if (b.isPartOfWall){
+				//we trust that we have error checked this already, and that the tile position is within the maps bounds and is valid
+				b.finalPosition = b.desiredPosition;
+			}
+			else{
+				BWAPI::TilePosition testLocation = getBuildingLocation(b);
+				if (!testLocation.isValid())
+				{
+					continue;
+				}
 
-            b.finalPosition = testLocation;
+				b.finalPosition = testLocation;
+			}
 
             // reserve this building's space
             BuildingPlacer::Instance().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
@@ -277,12 +283,12 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 }
 
 // add a new building to be constructed
-void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
+void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal, bool isPartOfWall)
 {
     _reservedMinerals += type.mineralPrice();
     _reservedGas	     += type.gasPrice();
 
-    Building b(type, desiredLocation);
+    Building b(type, desiredLocation, isPartOfWall);
     b.isGasSteal = isGasSteal;
     b.status = BuildingStatus::Unassigned;
 
