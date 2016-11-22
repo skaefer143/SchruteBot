@@ -194,15 +194,17 @@ void ProductionManager::manageBuildOrderQueue()
 			// construct a temporary building object
 			if (_currentlyBuildingWall){
 				//get a tile in the region after our main base chokepoint, and make that our desired build position
-				//CAN BE DELETED LATER, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
+				//CAN BE DELETED WHEN HAVE WALL LOCATION, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
 				BWTA::Region* ourRegion = BWTA::getRegion(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
 				BWTA::Region* otherRegion = *(ourRegion->getReachableRegions().begin()); //gets second region beyond our chokepoint
-				BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
+				//BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
 				BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
-				//might be broken
-
 				//need to cast to a tile position http://day9.tv/d/heinermann/tileposition-and-position/
-				BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
+				//might be broken, doesn't get correct region 
+				
+				//BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
+				_wallBuildingLocation = desiredPosition;
+				_haveLocationForThisBuilding = true;
 				Building b(currentItem.metaType.getUnitType(), desiredPosition);
 				b.isGasSteal = currentItem.isGasSteal;
 
@@ -400,7 +402,6 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
 			BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", BWAPI::Position(_wallBuildingLocation).x, BWAPI::Position(_wallBuildingLocation).y);
 			BWAPI::Broodwar->printf("Predicted build tile location was: x:%d y:%d", BWAPI::Position(_predictedTilePosition).x, BWAPI::Position(_predictedTilePosition).y);
 			BWAPI::Broodwar->printf("Our starting tile's position location was: x:%d y:%d", BWAPI::Position(startTile).x, BWAPI::Position(startTile).y); 
-			//predicted tile position and start point are not the same, messes up the getClosestTileTo function down the line. wtf
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal, true); //PROBLEM CODE
 			_buildingsInWallToBuild--;
 		}
@@ -587,9 +588,10 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
 
 		if (_currentlyBuildingWall){
+			//don't need right now, will most likely need when given location
 			//if this tile is a valid build location, make it our wall building location!
-			_wallBuildingLocation = _predictedTilePosition;
-			BWAPI::Broodwar->printf("Set wall building location to coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
+			//_wallBuildingLocation = _predictedTilePosition;
+			//BWAPI::Broodwar->printf("Set wall building location to coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
 		}
 	}
 }

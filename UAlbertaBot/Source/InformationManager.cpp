@@ -463,9 +463,22 @@ void InformationManager::drawMapInformation()
 			BWAPI::Position point2 = (*c)->getSides().second;
 			BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
 			BWAPI::Broodwar->drawCircleMap(point1, 8, BWAPI::Colors::Blue); //point 1 is blue
-			BWAPI::Broodwar->drawCircleMap(point2, 8, BWAPI::Colors::Black); //point 2 is green
+			BWAPI::Broodwar->drawCircleMap(point2, 8, BWAPI::Colors::Yellow); //point 2 is yellow
 		}
 	}
+
+
+	//draw the place we want to build our temp wall (test)
+	BWTA::Region* ourRegion = BWTA::getRegion(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
+	BWTA::Region* otherRegion = *(ourRegion->getReachableRegions().begin()); //gets second region beyond our chokepoint
+	BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
+	//draw the region centers
+	BWAPI::Position ourRegionPoint = ourRegion->getCenter();
+	BWAPI::Position otherRegionPoint = otherRegion->getCenter();
+	BWAPI::Broodwar->drawCircleMap(ourRegionPoint, 8, BWAPI::Colors::Blue); //point 1 is blue
+	BWAPI::Broodwar->drawCircleMap(otherRegionPoint, 8, BWAPI::Colors::Yellow); //point 2 is yellow
+	//draw the desiredTilePosition in Red
+	BWAPI::Broodwar->drawBoxMap(desiredPosition.x * 32, desiredPosition.y * 32, desiredPosition.x * 32 + 4 * 32, desiredPosition.y * 32 + 2 * 32, BWAPI::Colors::Red);
 }
 
 void InformationManager::updateUnit(BWAPI::Unit unit)
