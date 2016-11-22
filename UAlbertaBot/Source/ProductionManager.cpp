@@ -58,11 +58,9 @@ void ProductionManager::update()
 		_madeFirstWall = true;
 	}
 
-	// check the _queue for stuff we can build
-	manageBuildOrderQueue();
-
 	//if we haven't built our first wall near our main base yet, build it!
-	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran && BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) {
+	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 8) {
 		if (Config::Debug::DrawProductionInfo)
 		{
 			BWAPI::Broodwar->printf("We are building our wall as a Terran.");
@@ -77,6 +75,9 @@ void ProductionManager::update()
 		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
 		_buildingsInWallToBuild = 2;
 	}
+
+	// check the _queue for stuff we can build
+	manageBuildOrderQueue();
     
 	// if nothing is currently building, get a new goal from the strategy manager
 	if ((_queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
@@ -190,16 +191,16 @@ void ProductionManager::manageBuildOrderQueue()
 		// if the next item in the list is a building and we can't yet make it
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
-			/*get a tile in the region after our main base chokepoint, and make that our desired build position
-			//CAN BE DELETED LATER, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
-			std::set<BWTA::Chokepoint*>::iterator it = InformationManager::Instance()._mainBaseChokepoints.begin();
-			BWTA::Region* otherRegion = (*it)->getRegions().first; //gets second region beyond our chokepoint
-			BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
-			BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
-			//might be broken
-
 			// construct a temporary building object
 			if (_currentlyBuildingWall){
+				//get a tile in the region after our main base chokepoint, and make that our desired build position
+				//CAN BE DELETED LATER, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
+				BWTA::Region* ourRegion = BWTA::getRegion(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
+				BWTA::Region* otherRegion = *(ourRegion->getReachableRegions().begin()); //gets second region beyond our chokepoint
+				BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
+				BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
+				//might be broken
+
 				//need to cast to a tile position http://day9.tv/d/heinermann/tileposition-and-position/
 				BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
 				Building b(currentItem.metaType.getUnitType(), desiredPosition);
@@ -211,7 +212,7 @@ void ProductionManager::manageBuildOrderQueue()
 				// predict the worker movement to that building location
 				predictWorkerMovement(b);
 
-			} else {*/
+			} else {
 				Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
 				b.isGasSteal = currentItem.isGasSteal;
 				// set the producer as the closest worker, but do not set its job yet
@@ -219,7 +220,7 @@ void ProductionManager::manageBuildOrderQueue()
 
 				// predict the worker movement to that building location
 				predictWorkerMovement(b);
-			//}
+			}
            
 		}
 
@@ -395,14 +396,18 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
     {
 		if (_currentlyBuildingWall && _buildingsInWallToBuild > 0){
 			//send the building task, but with our wall build location!
+			BWAPI::TilePosition startTile = BWAPI::Broodwar->self()->getStartLocation();
 			BWAPI::Broodwar->printf("Making Building at coordinates: x:%d y:%d", BWAPI::Position(_wallBuildingLocation).x, BWAPI::Position(_wallBuildingLocation).y);
-			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal);
+			BWAPI::Broodwar->printf("Predicted build tile location was: x:%d y:%d", BWAPI::Position(_predictedTilePosition).x, BWAPI::Position(_predictedTilePosition).y);
+			BWAPI::Broodwar->printf("Our starting tile's position location was: x:%d y:%d", BWAPI::Position(startTile).x, BWAPI::Position(startTile).y); 
+			//predicted tile position and start point are not the same, messes up the getClosestTileTo function down the line. wtf
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal); //PROBLEM CODE
 			_buildingsInWallToBuild--;
 		}
         // send the building task to the building manager
-		else {
+		//else {
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
-		}
+		//}
     }
     else if (t.getUnitType().isAddon())
     {
