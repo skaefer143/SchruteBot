@@ -24,7 +24,9 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 	// for each vulture
 	for (auto & vulture : vultures)
 	{
-		
+		// train sub units such as scarabs or interceptors
+		//trainSubUnits(rangedUnit);//lay smart mines function in micro
+
 		bool vultureNearChokepoint = false;
 		for (auto & choke : BWTA::getChokepoints())
 		{
