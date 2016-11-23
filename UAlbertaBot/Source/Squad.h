@@ -10,7 +10,6 @@
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
 #include "TankManager.h"
-#include "VultureManager.h"
 #include "MedicManager.h"
 
 namespace UAlbertaBot
@@ -30,8 +29,7 @@ class Squad
 	RangedManager       _rangedManager;
 	DetectorManager     _detectorManager;
 	TransportManager    _transportManager;
-	TankManager         _tankManager;
-	VultureManager      _vultureManager;
+    TankManager         _tankManager;
     MedicManager        _medicManager;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;

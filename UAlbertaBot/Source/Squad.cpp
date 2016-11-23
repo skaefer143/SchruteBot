@@ -56,16 +56,14 @@ void Squad::update()
         
 		_meleeManager.regroup(regroupPosition);
 		_rangedManager.regroup(regroupPosition);
-		_tankManager.regroup(regroupPosition);
-		_vultureManager.regroup(regroupPosition);
+        _tankManager.regroup(regroupPosition);
         _medicManager.regroup(regroupPosition);
 	}
 	else // otherwise, execute micro
 	{
 		_meleeManager.execute(_order);
 		_rangedManager.execute(_order);
-		_tankManager.execute(_order);
-		_vultureManager.execute(_order);
+        _tankManager.execute(_order);
         _medicManager.execute(_order);
 		_transportManager.update();
 
@@ -145,8 +143,7 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset rangedUnits;
 	BWAPI::Unitset detectorUnits;
 	BWAPI::Unitset transportUnits;
-	BWAPI::Unitset tankUnits;
-	BWAPI::Unitset vultureUnits;
+    BWAPI::Unitset tankUnits;
     BWAPI::Unitset medicUnits;
 
 	// add _units to micro managers
@@ -154,7 +151,7 @@ void Squad::addUnitsToMicroManagers()
 	{
 		if(unit->isCompleted() && unit->getHitPoints() > 0 && unit->exists())
 		{
-			// select vector _units
+			// select dector _units
             if (unit->getType() == BWAPI::UnitTypes::Terran_Medic)
             {
                 medicUnits.insert(unit);
@@ -162,11 +159,7 @@ void Squad::addUnitsToMicroManagers()
             else if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode || unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
             {
                 tankUnits.insert(unit);
-			}
-			else if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture)
-			{
-				vultureUnits.insert(unit);
-			}
+            }   
 			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
@@ -193,8 +186,7 @@ void Squad::addUnitsToMicroManagers()
 	_rangedManager.setUnits(rangedUnits);
 	_detectorManager.setUnits(detectorUnits);
 	_transportManager.setUnits(transportUnits);
-	_tankManager.setUnits(tankUnits);
-	_vultureManager.setUnits(vultureUnits);
+    _tankManager.setUnits(tankUnits);
     _medicManager.setUnits(medicUnits);
 }
 
@@ -454,7 +446,6 @@ const SquadOrder & Squad::getSquadOrder()	const
 
 void Squad::addUnit(BWAPI::Unit u)
 {
-	if (u->getType() == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
 	_units.insert(u);
 }
 
