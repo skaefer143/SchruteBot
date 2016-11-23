@@ -15,14 +15,14 @@ using namespace BWAPI;
 struct BoundingBox{
     TilePosition start;
     TilePosition end;
-    int map[16][16];
+    int map[17][17];
 };
 
 class WallManager {
 public: 
     WallManager(BWAPI::TilePosition defensePoint, BWAPI::Region close, BWAPI::Region far);
     BoundingBox buildBoundingBox(BWAPI::TilePosition chokePoint);
-    void findWall(std::vector<BWAPI::Unit> Buildings, int depth);
+    void findWall(int depth);
     bool WalledOff(int buildingType);
     bool properWall(int x, int y, const Building &Building, int buildingNumber);
     void mapOutPlacement(int x, int y, int BuildingType, int BuildingType2);
@@ -36,10 +36,11 @@ private:
     BWAPI::TilePosition SupplyDepot1;
     BWAPI::TilePosition Barracks;
     BWAPI::TilePosition SupplyDepot2;
-
+    bool walkable;
     std::vector<BWAPI::TilePosition> buildingPos;
     BWAPI::Region closeRegion;
     BWAPI::Region farRegion;
+    std::array<int> buildings;
     int buildingGaps[2][4];
     int buildingSize[2][2];
     BoundingBox box;   
