@@ -3,13 +3,14 @@
 
 using namespace UAlbertaBot;
 
-WallManager::WallManager(BWAPI::TilePosition defensePoint, BWAPI::Region close, BWAPI::Region farSide){
+WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region close, BWAPI::Region farSide)
+{
 	
     // We just started, we can't have found a wall yet
     foundWall = false;
     // This might be vistigial code
-    closeRegion = close;
-    farRegion = farSide;
+    //closeRegion = close;
+    //farRegion = farSide;
 
     // Generate a bounding box around the point we want to defend
     box = buildBoundingBox(defensePoint);
@@ -23,6 +24,10 @@ WallManager::WallManager(BWAPI::TilePosition defensePoint, BWAPI::Region close, 
     // Dimensions of a SupplyDepot
     buildingSize[1][0] = 2; // Width
     buildingSize[1][1] = 2; // Height
+
+    // Dimensions of a SupplyDepot
+    buildingSize[2][0] = 2; // Width
+    buildingSize[2][1] = 2; // Height
 }
 
 BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
@@ -72,10 +77,10 @@ void WallManager::findWall(int depth){
     // If we've placed all the buildings, do they meet our requirements
     if (depth == buildings.size()){
         // Is it walled off?
-        bool walkable = floodFillInit(box.start.x, box.start.y);
+        bool walkable = floodFillInit(0, 0);
         if (!walkable){
             //lift barracks somehow, can we still pass through?
-            bool walkable = floodFillInit(box.start.x, box.start.y, 3);
+            bool walkable = floodFillInit(0, 0, 3);
             if (walkable){
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
@@ -87,21 +92,21 @@ void WallManager::findWall(int depth){
         return;
     } else {
         int building = buildings[depth];
-        for (int x = box.start.x; x < box.end.x; ++x){
-            for (int y = box.start.y; y < box.end.y; ++y){
+        for (int x = 0; x < int(box.map.size()) ; ++x){
+            for (int y = 0; y < int(box.map.size()); ++y){
                 // See if we can place the building down in such a way as to build part of a wall
-                if (properWall(x, y, building)){
+                if (properWall(x, y, building, depth)){
                     // Define tile locations of buildings
-                    mapOutPlacement(x, y, building, building);
+                    mapOutPlacement(x, y, depth, building);
                     // This is a good place to put the next building
-                    buildingPos.push_back(BWAPI::TilePosition(x, y));
+                    buildingPos.push_back(BWAPI::TilePosition(x+box.start.x, y+box.start.y));
                     findWall(depth + 1);
 
                     // Maybe not so good of a place
                     buildingPos.pop_back();
                     // Let's unmap it's layout
                     // 0 for blocked, 1 for free, >1 for type of building
-                    mapOutPlacement(x, y, building, 1);
+                    mapOutPlacement(x, y, depth, 1);
                 }
             }
         }
@@ -113,7 +118,7 @@ void WallManager::findWall(int depth){
 //     return false;
 // }
 
-bool WallManager::properWall(int x, int y, int buildingNumber){
+bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     bool neighbour = false;
 
     //Don't know how to get that information
@@ -121,6 +126,15 @@ bool WallManager::properWall(int x, int y, int buildingNumber){
     /*if (!BuildingPlacer::Instance().buildable(, x, y)){
         return neighbour;
     }*/
+    if (box.map[x][y] != 1){
+        return neighbour;
+    }
+
+    int width = buildingSize[depth][0];
+    int height = buildingSize[depth][1];
+    if (x + width > 16 || y + width > 16){
+        return neighbour;
+    }
     // We are building Barracks first, so if it's buildable we're good to go
     // Don't have a solid access for this
     if (buildingNumber == 2){
@@ -131,15 +145,22 @@ bool WallManager::properWall(int x, int y, int buildingNumber){
     int dx[] = {1, 1, 1, 0, 0, -1, -1,-1};
     int dy[] = { 1, -1, 0, 1, -1, 1, -1, 0 };
     
+    
     //For all spots around x and y, is there a building
-    for (int i = x; x < x + buildingSize[buildingNumber][0] ; ++i){
-        for (int j = y; y < y+buildingSize[buildingNumber][1]; ++j){
+    for (int i = x; i < x + width ; ++i){
+        for (int j = y; j < y+width; ++j){
             for (int k = 0; k < 8; ++k){
-                
+
                 int deltaX = i + dx[k];
                 int deltaY = j + dy[k];
                 //check to see if there are anybuildings near outer tiles
                 // as well if there are make sure the gap isn't too big
+                if (deltaX < 0 || deltaY < 0){
+                    continue;
+                }
+                if (deltaX >= box.map.size() || deltaY >= box.map.size()){
+                    continue;
+                }
                 if(box.map[deltaX][deltaY] >= 2){
                     // if there is a neighbour make sure it doesn't violate the max gap principle
                     // neighbour = maxGap()
@@ -175,8 +196,12 @@ BWAPI::TilePosition	 WallManager::getSupplyDepot2(){
 }
 
 void WallManager::mapOutPlacement(int x, int y, int buildingType, int fillNumber){
-    for(int i=x; i< x + buildingSize[buildingType][0]; ++i){
-        for(int j=y; j < y + buildingSize[buildingType][1]; ++j){
+    int width = buildingSize[buildingType][0];
+    int height = buildingSize[buildingType][1];
+    assert(y + height < 17);
+    assert(x + width < 17);
+    for(int i=x; i< x + width ; ++i){
+        for(int j=y; j < y + height ; ++j){
             box.map[i][j] = fillNumber;
         }
     }
@@ -197,8 +222,8 @@ bool WallManager::floodFillInit(int x, int y, int barracks) const{
     } else {
 
         y = findGoodYPos(x, y, 1);
-        int xGoal = box.end.x;
-        int yGoal = findGoodYPos(xGoal, box.end.y, -1);
+        int xGoal = 16;
+        int yGoal = findGoodYPos(16, 16, -1);
         if (yGoal == -1){
             return false;
         }
@@ -219,15 +244,15 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
         return false;
     /*} else if (!canFit(size, x, y)){
         return false;*/
-    } else if(x < box.start.x){
-        // reached min x
-        return false; 
-    } else if(y < box.start.y){
-        // reached min y
-        return false; 
-    } else if(y > box.end.y){
+    //} else if(x < box.start.x){
+    //    // reached min x
+    //    return false; 
+    //} else if(y < box.start.y){
+    //    // reached min y
+    //    return false; 
+    } else if(y > 16){
         return false;
-    } else if(x > box.end.x){
+    } else if(x > 16){
         return false;
     }
 
@@ -243,11 +268,11 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
         //floodFill(size, x, y - 1, group, tile);
         
         // South 
-        if (floodFill(x, y, tileNumber, xGoal, yGoal, barracks)){
+        if (floodFill(x, y+1, tileNumber, xGoal, yGoal, barracks)){
             return true;
         }
         //East
-        if (floodFill(x, y, tileNumber, xGoal, yGoal, barracks)){
+        if (floodFill(x+1, y, tileNumber, xGoal, yGoal, barracks)){
             return true;
         }
         // West

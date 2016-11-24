@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include "BWTA.h"
-
+#include "WallManager.H"
 #include "UnitData.h"
 
 #include "..\..\SparCraft\source\SparCraft.h"
@@ -18,7 +18,7 @@ class InformationManager
     
     BWAPI::Player       _self;
     BWAPI::Player       _enemy;
-
+    WallManager wall;
     std::map<BWAPI::Player, UnitData>                   _unitData;
     std::map<BWAPI::Player, BWTA::BaseLocation *>       _mainBaseLocations;
     std::map<BWAPI::Player, std::set<BWTA::Region *> >  _occupiedRegions;
@@ -32,7 +32,7 @@ class InformationManager
     void                    updateBaseLocationInfo();
     void                    updateOccupiedRegions(BWTA::Region * region,BWAPI::Player player);
     bool                    isValidUnit(BWAPI::Unit unit);
-
+    
 public:
 
     // yay for singletons!
@@ -53,6 +53,7 @@ public:
     int						getNumUnits(BWAPI::UnitType type,BWAPI::Player player);
     bool					nearbyForceHasCloaked(BWAPI::Position p,BWAPI::Player player,int radius);
     bool					isCombatUnit(BWAPI::UnitType type) const;
+    
 
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius);
 

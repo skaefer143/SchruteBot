@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include <BWAPI.h>
-#include "BuildingPlacer.h"
 
 // Algorithm borrowed from
 // http://satirist.org/ai/starcraft/blog/archives/151-LetaBots-wall-4-placing-buildings-to-form-the-wall.html on Nov 14 
@@ -15,18 +14,19 @@ using namespace BWAPI;
 struct BoundingBox{
     TilePosition start;
     TilePosition end;
-    int map[17][17];
+    std::array<std::array<int, 17>, 17> map;
 };
 
 class WallManager {
 public: 
-    WallManager(BWAPI::TilePosition defensePoint, BWAPI::Region close, BWAPI::Region far);
+    WallManager(BWAPI::TilePosition defensePoint); //BWAPI::Region close, BWAPI::Region far);
     BoundingBox buildBoundingBox(BWAPI::TilePosition chokePoint);
     void findWall(int depth);
     bool WalledOff(int buildingType);
-    bool properWall(int x, int y, int buildingNumber);
+    bool properWall(int x, int y, int buildingNumber, int depth);
     void mapOutPlacement(int x, int y, int BuildingType, int BuildingType2);
     bool maxGap();
+    bool goodWall(){ return foundWall; };
     BWAPI::TilePosition getSupplyDepot1();
     BWAPI::TilePosition getBarracks();
     BWAPI::TilePosition	getSupplyDepot2();
@@ -46,6 +46,6 @@ private:
     BWAPI::Region farRegion;
     std::array<int,3> buildings;
     std::array<std::array<int, 4>,2> buildingGaps;
-    std::array<std::array<int, 2>, 2>buildingSize;
+    std::array<std::array<int, 2>, 3>buildingSize;
     BoundingBox box;   
 };

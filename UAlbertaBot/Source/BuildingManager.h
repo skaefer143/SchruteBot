@@ -5,6 +5,7 @@
 #include "BuildingPlacer.h"
 #include "InformationManager.h"
 #include "MapTools.h"
+#include "WallManager.H"
 
 namespace UAlbertaBot
 {
