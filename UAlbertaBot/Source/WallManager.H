@@ -24,7 +24,7 @@ public:
     BoundingBox buildBoundingBox(BWAPI::TilePosition chokePoint);
     void findWall(int depth);
     bool WalledOff(int buildingType);
-    bool properWall(int x, int y, const Building &Building, int buildingNumber);
+    bool properWall(int x, int y, int buildingNumber);
     void mapOutPlacement(int x, int y, int BuildingType, int BuildingType2);
     bool maxGap();
     BWAPI::TilePosition getSupplyDepot1();
@@ -32,6 +32,10 @@ public:
     BWAPI::TilePosition	getSupplyDepot2();
 
 private:
+    bool floodFillInit(int x, int y, int barracks=1) const;
+    bool floodFill(int x, int y, int tileType, int xGoal, int yGoal, int barracks) const;   
+    int findGoodYPos(int x, int y, int travelDirection) const;
+    
     bool foundWall;
     BWAPI::TilePosition SupplyDepot1;
     BWAPI::TilePosition Barracks;
@@ -40,8 +44,8 @@ private:
     std::vector<BWAPI::TilePosition> buildingPos;
     BWAPI::Region closeRegion;
     BWAPI::Region farRegion;
-    std::array<int> buildings;
-    int buildingGaps[2][4];
-    int buildingSize[2][2];
+    std::array<int,3> buildings;
+    std::array<std::array<int, 4>,2> buildingGaps;
+    std::array<std::array<int, 2>, 2>buildingSize;
     BoundingBox box;   
 };

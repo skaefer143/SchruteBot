@@ -59,22 +59,22 @@ void ProductionManager::update()
 	}
 
 	//if we haven't built our first wall near our main base yet, build it!
-	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
-		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
-		if (Config::Debug::DrawProductionInfo)
-		{
-			BWAPI::Broodwar->printf("We are building our wall as a Terran.");
-		}
+	//if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
+	//	BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
+	//	if (Config::Debug::DrawProductionInfo)
+	//	{
+	//		BWAPI::Broodwar->printf("We are building our wall as a Terran.");
+	//	}
 
-		_currentlyBuildingWall = true;
+	//	_currentlyBuildingWall = true;
 
-		//build wall build order
-		//check how big wall needs to be, and then make that many buildings
-		//for now, make 2 sample buildings
-		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
-		_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
-		_buildingsInWallToBuild = 2;
-	}
+	//	//build wall build order
+	//	//check how big wall needs to be, and then make that many buildings
+	//	//for now, make 2 sample buildings
+	//	_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+	//	_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+	//	_buildingsInWallToBuild = 2;
+	//}
 
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
