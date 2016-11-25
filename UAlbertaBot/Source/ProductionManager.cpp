@@ -11,6 +11,12 @@ ProductionManager::ProductionManager()
 	, _buildingsInWallToBuild(0)
 {
     setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+
+	//find chokepoint, pass to wall manager so it can calculate wall building points
+	BWTA::BaseLocation* mainBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
+	Position center = BWTA::getNearestChokepoint(mainBaseLocation->getTilePosition())->getCenter();
+	_wallMan = WallManager(TilePosition(center));
+	_wallMan.findWall(0);
 }
 
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
@@ -59,22 +65,34 @@ void ProductionManager::update()
 	}
 
 	//if we haven't built our first wall near our main base yet, build it!
-	//if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
-	//	BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
-	//	if (Config::Debug::DrawProductionInfo)
-	//	{
-	//		BWAPI::Broodwar->printf("We are building our wall as a Terran.");
-	//	}
+	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
+		
 
-	//	_currentlyBuildingWall = true;
+		_currentlyBuildingWall = true;
 
-	//	//build wall build order
-	//	//check how big wall needs to be, and then make that many buildings
-	//	//for now, make 2 sample buildings
-	//	_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
-	//	_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
-	//	_buildingsInWallToBuild = 2;
-	//}
+		if (_wallMan.goodWall()){
+			if (Config::Debug::DrawProductionInfo)
+			{
+				BWAPI::Broodwar->printf("We are building our wall as a Terran.");
+			}
+			//will only put barracks and supply1 and supply2 locations, if we found a wall!
+			_barrackLocation = _wallMan.getBarracks();
+			_supply1Location = _wallMan.getSupplyDepot1();
+			_supply2Location = _wallMan.getSupplyDepot2();
+
+			//build wall build order
+			//make a barracks and 2 supply depots
+			_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+			_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+			_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+			_buildingsInWallToBuild = 3;
+		}
+
+		
+		
+		
+	}
 
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
@@ -193,15 +211,22 @@ void ProductionManager::manageBuildOrderQueue()
 		{
 			// construct a temporary building object
 			if (_currentlyBuildingWall){
-				//get a tile in the region after our main base chokepoint, and make that our desired build position
-				//CAN BE DELETED WHEN HAVE WALL LOCATION, MOSTLY FOR TESTING IF I CAN BUILD AT A CERATIN LOCATION
-				BWTA::Region* ourRegion = BWTA::getRegion(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
-				BWTA::Region* otherRegion = *(ourRegion->getReachableRegions().begin()); //gets second region beyond our chokepoint
-				//BWAPI::Broodwar->printf("Other Region Center: x:%d y:%d", otherRegion->getCenter().x, otherRegion->getCenter().y);
-				BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
-				//need to cast to a tile position http://day9.tv/d/heinermann/tileposition-and-position/
-				//might be broken, doesn't get correct region 
 				
+				BWAPI::TilePosition desiredPosition = BWAPI::Broodwar->self()->getStartLocation(); //if our if statements fail,
+				//we will build the building near our base anyways, so the AI doesn't crash
+
+				if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Barracks).getName()){
+					desiredPosition = _barrackLocation;
+				}
+				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getName()){
+					if (_buildingsInWallToBuild <= 1){
+						//requires that supply depot 2 is the last building to build in wall
+						desiredPosition = _supply2Location;
+					}
+					else{
+						desiredPosition = _supply1Location;
+					}
+				}
 				//BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
 				_wallBuildingLocation = desiredPosition;
 				_haveLocationForThisBuilding = true;
@@ -527,19 +552,6 @@ void ProductionManager::predictWorkerMovement(const Building & b)
         return;
     }
 
-	// get a possible building location for the building
-	//if (!_haveLocationForThisBuilding && _currentlyBuildingWall){
-		//_predictedTilePosition = WallingManager::Instance().getBuildingLocation(b);
-		//When we can get the wall building locations from WallingManager, uncomment the code.
-		//for now, give sample location, where to build the wall
-
-		//side note: WallingManagers getBuildingLocation should return where that specific building in the wall should be built
-
-
-		//sample location is given in the manageBuildOrderQueue()
-
-
-	//} 
 	if (!_haveLocationForThisBuilding){
 		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
 	}

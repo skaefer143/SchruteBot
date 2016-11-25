@@ -3,6 +3,8 @@
 
 using namespace UAlbertaBot;
 
+WallManager::WallManager(){}
+
 WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region close, BWAPI::Region farSide)
 {
 	

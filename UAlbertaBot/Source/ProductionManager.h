@@ -24,7 +24,13 @@ class ProductionManager
 	bool				_madeFirstWall;
 	bool				_currentlyBuildingWall;
 	BWAPI::TilePosition	_wallBuildingLocation;
+	BWAPI::TilePosition	_barrackLocation;
+	BWAPI::TilePosition	_supply1Location;
+	bool				_supply1Built;
+	BWAPI::TilePosition	_supply2Location;
+	bool				_supply2Built;
 	int					_buildingsInWallToBuild;
+	WallManager			_wallMan;
     
     BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));

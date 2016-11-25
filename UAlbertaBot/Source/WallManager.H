@@ -19,6 +19,7 @@ struct BoundingBox{
 
 class WallManager {
 public: 
+	WallManager();
     WallManager(BWAPI::TilePosition defensePoint); //BWAPI::Region close, BWAPI::Region far);
     BoundingBox buildBoundingBox(BWAPI::TilePosition chokePoint);
     void findWall(int depth);
