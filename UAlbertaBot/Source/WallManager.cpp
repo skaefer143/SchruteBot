@@ -78,7 +78,7 @@ void WallManager::findWall(int depth){
 
     // If we've placed all the buildings, do they meet our requirements
     if (depth == buildings.size()){
-        // Is it walled off?
+        // Is it walled offdWall?
         bool walkable = floodFillInit(0, 0);
         if (!walkable){
             //lift barracks somehow, can we still pass through?
