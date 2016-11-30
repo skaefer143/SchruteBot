@@ -1,13 +1,15 @@
 #include "WallManager.h"
-
-
+#include "MetaType.h"
+#include "BuildingManager.h"
+#include <fstream>
 using namespace UAlbertaBot;
 
 WallManager::WallManager(){}
 
 WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region close, BWAPI::Region farSide)
 {
-	
+    count = 0;
+    BWAPI::Broodwar->printf("Calling wallmanager!!!!");
     // We just started, we can't have found a wall yet
     foundWall = false;
     // This might be vistigial code
@@ -20,15 +22,15 @@ WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region clos
     buildings[1] = 3;
     buildings[2] = 3;
     // Dimensions of a Barracks
-    buildingSize[0][0] = 3; // Width
-    buildingSize[0][1] = 2; // Height
+    buildingSize[0][0] = 4; // Width
+    buildingSize[0][1] = 3; // Height
 
     // Dimensions of a SupplyDepot
-    buildingSize[1][0] = 2; // Width
+    buildingSize[1][0] = 3; // Width
     buildingSize[1][1] = 2; // Height
 
     // Dimensions of a SupplyDepot
-    buildingSize[2][0] = 2; // Width
+    buildingSize[2][0] = 3; // Width
     buildingSize[2][1] = 2; // Height
 }
 
@@ -69,6 +71,9 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
 }
 
 void WallManager::findWall(int depth){
+    std::ofstream debug;
+
+    debug.open("debug.txt", std::ios_base::app);
     // Problem, need to find close and far regions
 
     // If we've found the wall we can stop the search
@@ -78,14 +83,18 @@ void WallManager::findWall(int depth){
 
     // If we've placed all the buildings, do they meet our requirements
     if (depth == buildings.size()){
-        // Is it walled offdWall?
+        // Is it walled off?
+        debug << *this;
         bool walkable = floodFillInit(0, 0);
+        count++;
         if (!walkable){
             //lift barracks somehow, can we still pass through?
             bool walkable = floodFillInit(0, 0, 3);
             if (walkable){
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
+                debug << *this;
+                BWAPI::Broodwar->printf("Size of buildingPos %d", buildingPos.size());
                 Barracks = buildingPos[0];
                 SupplyDepot1 = buildingPos[1];
                 SupplyDepot2 = buildingPos[2];
@@ -101,9 +110,8 @@ void WallManager::findWall(int depth){
                     // Define tile locations of buildings
                     mapOutPlacement(x, y, depth, building);
                     // This is a good place to put the next building
-                    buildingPos.push_back(BWAPI::TilePosition(x+box.start.x, y+box.start.y));
+                    buildingPos.push_back(BWAPI::TilePosition(x + box.start.x, y + box.start.y));
                     findWall(depth + 1);
-
                     // Maybe not so good of a place
                     buildingPos.pop_back();
                     // Let's unmap it's layout
@@ -122,12 +130,19 @@ void WallManager::findWall(int depth){
 
 bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     bool neighbour = false;
-
+    Building here;
     //Don't know how to get that information
-    //    MetaType(BWAPI::UnitTypes::Terran_Barracks)
-    /*if (!BuildingPlacer::Instance().buildable(, x, y)){
+    if (depth == 0){
+        UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Barracks).getUnitType();
+        Building here = Building(unit, BWAPI::TilePosition(x, y));
+    }
+    else{
+        UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getUnitType();
+        Building here = Building(unit, BWAPI::TilePosition(x, y));
+    }
+    if (!BuildingPlacer::Instance().buildable(here, x, y)){
         return neighbour;
-    }*/
+    }
     if (box.map[x][y] != 1){
         return neighbour;
     }
@@ -150,7 +165,7 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     
     //For all spots around x and y, is there a building
     for (int i = x; i < x + width ; ++i){
-        for (int j = y; j < y+width; ++j){
+        for (int j = y; j < y+height; ++j){
             for (int k = 0; k < 8; ++k){
 
                 int deltaX = i + dx[k];
@@ -293,4 +308,29 @@ int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
         }
     }
     return -1;
+}
+
+// For debugging the wall manager
+std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
+    static int iteration = 0;
+    out << "WallManager state: " << std::endl;
+    out << "Iteration : " << iteration++ << std::endl;
+    out << "Found Wall? :" << wallmanager.foundWall << std::endl;
+    
+    out << "Building Sizes: " << std::endl;
+    int buildingCount = 0;
+    for (const auto building : wallmanager.buildingSize){
+        out << "Building: " << buildingCount++ << " ";
+        out << building[0] << " by " << building[1] << std::endl;
+    }
+
+    out << "Bounding Box: " << std::endl;
+    for (const auto row : wallmanager.box.map){
+        for (const auto column : row){
+            out << column << " ";
+        }
+        out << std::endl;
+    }
+    out << "------------" << std::endl << std::endl;
+    return out;
 }

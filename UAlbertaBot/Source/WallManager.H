@@ -31,7 +31,8 @@ public:
     BWAPI::TilePosition getSupplyDepot1();
     BWAPI::TilePosition getBarracks();
     BWAPI::TilePosition	getSupplyDepot2();
-
+    BoundingBox box;
+    friend std::ostream &operator<<(std::ostream & out, const WallManager & wm_in);
 private:
     bool floodFillInit(int x, int y, int barracks=1) const;
     bool floodFill(int x, int y, int tileType, int xGoal, int yGoal, int barracks) const;   
@@ -48,5 +49,6 @@ private:
     std::array<int,3> buildings;
     std::array<std::array<int, 4>,2> buildingGaps;
     std::array<std::array<int, 2>, 3>buildingSize;
-    BoundingBox box;   
+    int count;
+   // BoundingBox box;   
 };

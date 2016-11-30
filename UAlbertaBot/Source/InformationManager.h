@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "BWTA.h"
-#include "WallManager.H"
 #include "UnitData.h"
 
 #include "..\..\SparCraft\source\SparCraft.h"
@@ -18,7 +17,6 @@ class InformationManager
     
     BWAPI::Player       _self;
     BWAPI::Player       _enemy;
-    WallManager wall;
     std::map<BWAPI::Player, UnitData>                   _unitData;
     std::map<BWAPI::Player, BWTA::BaseLocation *>       _mainBaseLocations;
     std::map<BWAPI::Player, std::set<BWTA::Region *> >  _occupiedRegions;

@@ -5,17 +5,16 @@ using namespace UAlbertaBot;
 InformationManager::InformationManager()
 : _self(BWAPI::Broodwar->self())
 , _enemy(BWAPI::Broodwar->enemy())
-, wall(BWAPI::TilePosition(0, 0))
 {
 	initializeRegionInformation();
-    Position defend = BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter();
+  /*  Position defend = BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter();
     wall = WallManager(BWAPI::TilePosition(defend));
     if (!wall.goodWall()){
         wall.findWall(0);
     }
     if (wall.goodWall()){
         Broodwar->printf("Barracks: %d, %d", wall.getBarracks().x, wall.getBarracks().y);
-    }
+    }*/
     
 }
 

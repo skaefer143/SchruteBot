@@ -22,6 +22,8 @@ namespace Config
         bool ScoutHarassEnemy               = true;
         bool UseEnemySpecificStrategy       = false;
         bool FoundEnemySpecificStrategy     = false;
+        bool UseWallingAsTerran             = true;
+
     }
 
     namespace Modules							    
