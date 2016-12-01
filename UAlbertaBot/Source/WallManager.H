@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Common.h"
+#include "MetaType.h"
+#include "BuildingManager.h"
+#include <fstream>
 #include <BWAPI.h>
 
 // Algorithm borrowed from
@@ -14,7 +17,7 @@ using namespace BWAPI;
 struct BoundingBox{
     TilePosition start;
     TilePosition end;
-    std::array<std::array<int, 17>, 20> map;
+    std::array<std::array<int, 17>, 17> map;
 };
 
 class WallManager {
@@ -42,7 +45,6 @@ private:
     BWAPI::TilePosition SupplyDepot1;
     BWAPI::TilePosition Barracks;
     BWAPI::TilePosition SupplyDepot2;
-    bool walkable;
     std::vector<BWAPI::TilePosition> buildingPos;
     BWAPI::Region closeRegion;
     BWAPI::Region farRegion;
@@ -50,5 +52,6 @@ private:
     std::array<std::array<int, 4>,2> buildingGaps;
     std::array<std::array<int, 2>, 3>buildingSize;
     int count;
+    std::array<std::array<int, 17>, 17> walkable;
    // BoundingBox box;   
 };

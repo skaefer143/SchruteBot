@@ -1,7 +1,5 @@
 #include "WallManager.h"
-#include "MetaType.h"
-#include "BuildingManager.h"
-#include <fstream>
+
 using namespace UAlbertaBot;
 
 WallManager::WallManager(){}
@@ -64,6 +62,8 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
     for (int i = 0; i < 17; ++i){
         for (int j = 0; j < 17; ++j){
             box.map[j][i] = BWAPI::Broodwar->isBuildable(i+startTileX, j+startTileY);
+            BWAPI::WalkPosition pos = BWAPI::WalkPosition(BWAPI::TilePosition(i + startTileX, j + startTileY));
+            walkable[j][i] = BWAPI::Broodwar->isWalkable(pos.x, pos.y);
         }
     }
     return box;
@@ -85,12 +85,12 @@ void WallManager::findWall(int depth){
         // Print out the state of the wall manager
         debug << *this;
         // Is it walled off?
-        bool walkable = floodFillInit(0, 0);
+        bool canWalk = floodFillInit(0, 0);
         count++;
-        if (!walkable){
+        if (!canWalk){
             //lift barracks somehow, can we still pass through?
-            bool walkable = floodFillInit(0, 0, 3);
-            if (walkable){
+            bool walkable = floodFillInit(0, 0, 2);
+            if (canWalk){
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
               
@@ -285,7 +285,7 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
 
 
 
-    else if (box.map[y][x] != tileNumber && box.map[y][x] != barracks){
+    else if (walkable[y][x] != 1  && box.map[y][x] <= barracks){
         return false;
     }
     if(x == xGoal && y == yGoal){
@@ -339,6 +339,14 @@ std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
     for (size_t i = 0; i < 17; ++i){
         for (size_t j = 0; j < 17; ++j){
             out << box.map[i][j] << " ";
+        }
+        out << std::endl;
+    }
+
+    out << "Is Walkable" << std::endl;
+    for (size_t i = 0; i < 17; ++i){
+        for (size_t j = 0; j < 17; ++j){
+            out << wallmanager.walkable[i][j] << " ";
         }
         out << std::endl;
     }
