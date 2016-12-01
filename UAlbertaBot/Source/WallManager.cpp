@@ -70,8 +70,8 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
 }
 
 void WallManager::findWall(int depth){
+    //Debug file
     std::ofstream debug;
-
     debug.open("debug.txt", std::ios_base::app);
     // Problem, need to find close and far regions
 
@@ -82,8 +82,9 @@ void WallManager::findWall(int depth){
 
     // If we've placed all the buildings, do they meet our requirements
     if (depth == buildings.size()){
-        // Is it walled off?
+        // Print out the state of the wall manager
         debug << *this;
+        // Is it walled off?
         bool walkable = floodFillInit(0, 0);
         count++;
         if (!walkable){
@@ -92,7 +93,7 @@ void WallManager::findWall(int depth){
             if (walkable){
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
-                debug << *this;
+              
                 BWAPI::Broodwar->printf("Size of buildingPos %d", buildingPos.size());
                 Barracks = buildingPos[0];
                 SupplyDepot1 = buildingPos[1];
