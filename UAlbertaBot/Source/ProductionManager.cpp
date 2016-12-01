@@ -59,7 +59,7 @@ void ProductionManager::update()
     BWAPI::Broodwar->drawBoxMap(_wallMan.box.start.x * 32, _wallMan.box.start.y * 32, _wallMan.box.end.x * 32, _wallMan.box.end.y * 32, BWAPI::Colors::Red);
     BWAPI::Broodwar->drawBoxMap(_wallMan.getBarracks().x * 32, _wallMan.getBarracks().y * 32, _wallMan.getBarracks().x*32  + 32, _wallMan.getBarracks().y*32 + 32, BWAPI::Colors::Yellow);
     BWAPI::Broodwar->drawBoxMap(_wallMan.getSupplyDepot1().x*32, _wallMan.getSupplyDepot1().y*32, _wallMan.getSupplyDepot1().x*32 + 32, _wallMan.getSupplyDepot1().y*32 + 32, BWAPI::Colors::Purple);
-    BWAPI::Broodwar->drawBoxMap(_wallMan.getSupplyDepot2().x * 32, _wallMan.getSupplyDepot2().y * 32, _wallMan.getSupplyDepot2().x * 32 + 32, _wallMan.getSupplyDepot2().y * 32 + 32, BWAPI::Colors::Purple);
+    BWAPI::Broodwar->drawBoxMap(_wallMan.getSupplyDepot2().x * 32, _wallMan.getSupplyDepot2().y * 32, _wallMan.getSupplyDepot2().x * 32 + 32, _wallMan.getSupplyDepot2().y * 32 + 32, BWAPI::Colors::Blue);
 	//turn off currently building wall, if we have built the wall
 	//needs to come before manageBuildOrderQueue(), so we know whether or not walling is done.
 	if (_currentlyBuildingWall && !_madeFirstWall && _buildingsInWallToBuild <= 0){

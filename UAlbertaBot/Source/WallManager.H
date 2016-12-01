@@ -56,4 +56,6 @@ private:
     std::array< std::array<int, 16>, 16 > walkable;
     mutable std::array< std::array<int, 16>, 16 > walked;
    // BoundingBox box;   
+
+	void WallManager::checkForPreBuiltWall();
 };
