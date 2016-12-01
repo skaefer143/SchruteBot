@@ -9,7 +9,6 @@ WallManager::WallManager(){}
 WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region close, BWAPI::Region farSide)
 {
     count = 0;
-    BWAPI::Broodwar->printf("Calling wallmanager!!!!");
     // We just started, we can't have found a wall yet
     foundWall = false;
     // This might be vistigial code
@@ -156,7 +155,7 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     // We are building Barracks first, so if it's buildable we're good to go
     // Don't have a solid access for this
     if (buildingNumber == 2){
-        return true;
+        neighbour = true;
     }
     // If it's not a Barracks, it should be beside another unit
     // x and y being all pairwise combinations of x and y;
@@ -172,12 +171,19 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
                 int deltaX = i + dx[k];
                 int deltaY = j + dy[k];
                 //check to see if there are anybuildings near outer tiles
-                // as well if there are make sure the gap isn't too big
+                // as well, if they are make sure the gap isn't too big
+                
+                // If they are are the edge, continue
                 if (deltaX < 0 || deltaY < 0){
                     continue;
                 }
                 if (deltaX >= box.map.size() || deltaY >= box.map.size()){
                     continue;
+                }
+
+                // Prevent overlapping buildings
+                if (box.map[j][i] != 1){
+                    return false;
                 }
                 if (box.map[deltaY][deltaX] >= 2){
                     // if there is a neighbour make sure it doesn't violate the max gap principle
@@ -185,6 +191,8 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
                     // Eventually need to check for maxgap but for now we're happy that it has a nei
                     neighbour = true;
                 }
+
+
                 // Idea for how to use maxgap 
                 // if(neighbour){
                 //     if(maxGap()){
