@@ -73,10 +73,16 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
 
             // Let's see if for every buildable tile we can walk to it
             // the problem with this is it's not high enough resolution
-            bool top = BWTA::isConnected(newX, newY, newX, newY - 1);
+            /*bool top = BWTA::isConnected(newX, newY, newX, newY - 1);
             bool bottom = BWTA::isConnected(newX, newY, newX, newY + 1);
             bool left = BWTA::isConnected(newX, newY, newX - 1, newY);
-            bool right = BWTA::isConnected(newX, newY, newX+1, newY);
+            bool right = BWTA::isConnected(newX, newY, newX+1, newY);*/
+            int current = BWAPI::Broodwar->getGroundHeight(newX, newY);
+            bool top = BWAPI::Broodwar->getGroundHeight(newX, newY - 1) - current < 3;
+            bool bottom = BWAPI::Broodwar->getGroundHeight(newX, newY + 1) - current < 3;
+            bool left = BWAPI::Broodwar->getGroundHeight(newX - 1, newY) - current < 3;
+            bool right = BWAPI::Broodwar->getGroundHeight(newX + 1, newY) - current < 3;
+
             bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
             bool topRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4);
             bool bottomLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4 +1);
@@ -264,9 +270,12 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
     int height = BWAPI::Broodwar->mapHeight();
     
     //Debug stuff
+    walked.empty();
     for (size_t i = 0; i < walked.size(); ++i){
         for (size_t j = 0; j < walked.size(); ++j){
-            walked[i][j] = 0;
+            //walked[j][i] = BWTA::getGroundDistance(BWAPI::TilePosition(box.start.x + i ,box.start.y + j), BWAPI::TilePosition(box.start.x + i, box.start.y +j+1));
+            //walked[i][j] = 1;
+           walked[j][i] = BWAPI::Broodwar->getRegionAt((box.start.x +i)*32, (box.start.y+j)*32)->getID();
         }
     }
     // Generate key for map
@@ -311,7 +320,7 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
 bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal, int yGoal, int barracks) const{
     int width = BWAPI::Broodwar->mapWidth();
     int height = BWAPI::Broodwar->mapHeight();
-    walked[y][x] = 0;
+    //walked[y][x] = 0;
     if (x < 0 || x >= width){
         // Bounds check for x
         return false;
@@ -336,7 +345,7 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
     else if (walkable[y][x] != 1  || box.map[y][x] > barracks){
         return false;
     }
-    walked[y][x] = 1;
+    //walked[y][x] = 1;
     if(x == xGoal && y == yGoal){
         return true;
     } else{
