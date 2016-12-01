@@ -64,7 +64,7 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
     box.end = BWAPI::TilePosition(endTileX, endTileY);
     for (int i = 0; i < 17; ++i){
         for (int j = 0; j < 17; ++j){
-            box.map[i][j] = BWAPI::Broodwar->isBuildable(i, j);
+            box.map[j][i] = BWAPI::Broodwar->isBuildable(i+startTileX, j+startTileY);
         }
     }
     return box;
@@ -131,19 +131,20 @@ void WallManager::findWall(int depth){
 bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     bool neighbour = false;
     Building here;
+    BWAPI::TilePosition currentTile = BWAPI::TilePosition(x + box.start.x, y + box.start.y);
     //Don't know how to get that information
     if (depth == 0){
         UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Barracks).getUnitType();
-        Building here = Building(unit, BWAPI::TilePosition(x, y));
+        Building here = Building(unit, currentTile);
     }
     else{
         UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getUnitType();
-        Building here = Building(unit, BWAPI::TilePosition(x, y));
+        Building here = Building(unit, currentTile);
     }
-    if (!BuildingPlacer::Instance().buildable(here, x, y)){
+    if (!BuildingPlacer::Instance().canBuildHere(currentTile, here)){
         return neighbour;
     }
-    if (box.map[x][y] != 1){
+    if (box.map[y][x] != 1){
         return neighbour;
     }
 
@@ -178,7 +179,7 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
                 if (deltaX >= box.map.size() || deltaY >= box.map.size()){
                     continue;
                 }
-                if(box.map[deltaX][deltaY] >= 2){
+                if (box.map[deltaY][deltaX] >= 2){
                     // if there is a neighbour make sure it doesn't violate the max gap principle
                     // neighbour = maxGap()
                     // Eventually need to check for maxgap but for now we're happy that it has a nei
@@ -219,7 +220,7 @@ void WallManager::mapOutPlacement(int x, int y, int buildingType, int fillNumber
     assert(x + width < 17);
     for(int i=x; i< x + width ; ++i){
         for(int j=y; j < y + height ; ++j){
-            box.map[i][j] = fillNumber;
+            box.map[j][i] = fillNumber;
         }
     }
 }
@@ -275,7 +276,7 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
 
 
 
-    else if (box.map[x][y] != tileNumber && box.map[x][y] != barracks){
+    else if (box.map[y][x] != tileNumber && box.map[y][x] != barracks){
         return false;
     }
     if(x == xGoal && y == yGoal){
@@ -303,7 +304,7 @@ int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
     int yPos;
     for (int i = 0; i < max; ++i){
         yPos = y + travelDirection*i;
-        if (box.map[x][yPos] == 1){
+        if (box.map[yPos][x] == 1){
             return yPos;
         }
     }
@@ -314,9 +315,9 @@ int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
 std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
     static int iteration = 0;
     out << "WallManager state: " << std::endl;
-    out << "Iteration : " << iteration++ << std::endl;
+    out << "Iteration : " << iteration << std::endl;
     out << "Found Wall? :" << wallmanager.foundWall << std::endl;
-    
+
     out << "Building Sizes: " << std::endl;
     int buildingCount = 0;
     for (const auto building : wallmanager.buildingSize){
@@ -325,9 +326,10 @@ std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
     }
 
     out << "Bounding Box: " << std::endl;
-    for (const auto row : wallmanager.box.map){
-        for (const auto column : row){
-            out << column << " ";
+    BoundingBox box = wallmanager.box;
+    for (size_t i = 0; i < 17; ++i){
+        for (size_t j = 0; j < 17; ++j){
+            out << box.map[i][j] << " ";
         }
         out << std::endl;
     }

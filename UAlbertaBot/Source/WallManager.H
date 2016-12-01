@@ -14,7 +14,7 @@ using namespace BWAPI;
 struct BoundingBox{
     TilePosition start;
     TilePosition end;
-    std::array<std::array<int, 17>, 17> map;
+    std::array<std::array<int, 17>, 20> map;
 };
 
 class WallManager {
