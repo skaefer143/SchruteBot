@@ -63,6 +63,9 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
         for (int j = 0; j < 17; ++j){
             box.map[j][i] = BWAPI::Broodwar->isBuildable(i+startTileX, j+startTileY);
             BWAPI::WalkPosition pos = BWAPI::WalkPosition(BWAPI::TilePosition(i + startTileX, j + startTileY));
+            
+            // Let's see if for every buildable tile we can walk to it
+            // the problem with this is it's not high enough resolution
             walkable[j][i] = BWAPI::Broodwar->isWalkable(pos.x, pos.y);
         }
     }
