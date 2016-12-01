@@ -17,7 +17,7 @@ using namespace BWAPI;
 struct BoundingBox{
     TilePosition start;
     TilePosition end;
-    std::array<std::array<int, 17>, 17> map;
+    std::array<std::array<int, 16>, 16> map;
 };
 
 class WallManager {
@@ -37,7 +37,7 @@ public:
     BoundingBox box;
     friend std::ostream &operator<<(std::ostream & out, const WallManager & wm_in);
 private:
-    bool floodFillInit(int x, int y, int barracks=1) const;
+    bool floodFillInit(int x, int y, int barracks=1);
     bool floodFill(int x, int y, int tileType, int xGoal, int yGoal, int barracks) const;   
     int findGoodYPos(int x, int y, int travelDirection) const;
     
@@ -52,7 +52,8 @@ private:
     std::array<std::array<int, 4>,2> buildingGaps;
     std::array<std::array<int, 2>, 3>buildingSize;
     int count;
-    std::array< std::array<int, 17>, 17 > walkable;
-    mutable std::array< std::array<int, 17>, 17 > walked;
+    mutable int x, y, yGoal, xGoal;
+    std::array< std::array<int, 16>, 16 > walkable;
+    mutable std::array< std::array<int, 16>, 16 > walked;
    // BoundingBox box;   
 };
