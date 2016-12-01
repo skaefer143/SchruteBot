@@ -52,6 +52,7 @@ private:
     std::array<std::array<int, 4>,2> buildingGaps;
     std::array<std::array<int, 2>, 3>buildingSize;
     int count;
-    std::array<std::array<int, 17>, 17> walkable;
+    std::array< std::array<int, 17>, 17 > walkable;
+    mutable std::array< std::array<int, 17>, 17 > walked;
    // BoundingBox box;   
 };
