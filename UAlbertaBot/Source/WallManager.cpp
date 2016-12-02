@@ -408,6 +408,7 @@ bool WallManager::checkForPreBuiltWall(){
 		}
 		else if (startLocation == BWAPI::Position(405, 3007)){
 			Broodwar->printf("lower left");
+			//DOES NOT WORK, SCV'S CAN'T GET BACK TO BASE, CAUSES GLITCHES
 			//second position, lower left of map
 			//need 2 supply depots, that's it. 
 			//first one at 490, 2408
