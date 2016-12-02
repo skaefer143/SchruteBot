@@ -9,6 +9,7 @@ LiftingManager & LiftingManager::Instance()
 }
 
 void LiftingManager::update(){
+	//check if any wall buildings need to be lifted
 
 
 }

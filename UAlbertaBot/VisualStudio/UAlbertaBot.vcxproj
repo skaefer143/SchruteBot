@@ -128,6 +128,7 @@
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\Source\LiftingManager.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
     <ClCompile Include="..\Source\MapGrid.cpp" />
     <ClCompile Include="..\Source\MapTools.cpp" />
@@ -154,7 +155,6 @@
     <ClCompile Include="..\Source\WallManager.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
-    <ClCompile Include="LiftingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\AutoObserver.h" />
@@ -172,6 +172,7 @@
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\Source\LiftingManager.h" />
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapGrid.h" />
     <ClInclude Include="..\Source\MapTools.h" />
@@ -199,7 +200,6 @@
     <ClInclude Include="..\Source\WallManager.H" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
-    <ClInclude Include="LiftingManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -107,9 +107,6 @@ void ProductionManager::update()
 			}
 			
 		}
-
-		
-		
 		
 	}
 
