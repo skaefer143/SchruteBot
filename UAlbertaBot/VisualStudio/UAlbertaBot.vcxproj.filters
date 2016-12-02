@@ -156,6 +156,9 @@
     <ClCompile Include="..\Source\WallManager.cpp">
       <Filter>game\macro</Filter>
     </ClCompile>
+    <ClCompile Include="LiftingManager.cpp">
+      <Filter>game\macro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -282,6 +285,9 @@
       <Filter>game\util</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\WallManager.H">
+      <Filter>game\macro</Filter>
+    </ClInclude>
+    <ClInclude Include="LiftingManager.h">
       <Filter>game\macro</Filter>
     </ClInclude>
   </ItemGroup>
