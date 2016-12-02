@@ -83,10 +83,10 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
 
             // This is the assumption that if the ground distance from one time to another is 32, they can walk from tile a to tile b.
             bool canWalk = BWTA::getGroundDistance(BWAPI::TilePosition(newX, newY), BWAPI::TilePosition(newX,  newY + 1)) > -1;
-            /*bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
+            bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
             bool topRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4);
             bool bottomLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4 +1);
-            bool bottomRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4 +1);*/
+            bool bottomRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4 +1);
             //(topLeft * topLeft * bottomRight * bottomLeft )
             walkable[j][i] = canWalk;
         }
@@ -113,13 +113,12 @@ void WallManager::findWall(int depth){
         count++;
 
         if (!canWalk){
-            debug << *this;
 
+            debug << *this;
             //lift barracks somehow, can we still pass through?
             bool canWalk = floodFillInit(0, 0, 2);
 
             if (canWalk){
-                
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
                 debug << *this;
@@ -454,7 +453,7 @@ std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
             walkable << wallmanager.walkable[i][j] << " ";
             walked << wallmanager.walked[i][j] << " ";
             if ((i > 0 && i < wallmanager.walkable.size()-2) && (j > 0 && j < wallmanager.walkable.size()-2)){
-                fullmap << ((wallmanager.box.map[i][j] > 1) ? wallmanager.box.map[i][j] : (wallmanager.walked[i][j] == 7 ? wallmanager.walked[i][j] : wallmanager.walkable[i][j])) << " ";
+                fullmap << ((wallmanager.box.map[i-1][j-1] > 1) ? wallmanager.box.map[i-1][j-1] : (wallmanager.walked[i][j] == 7 ? wallmanager.walked[i][j] : wallmanager.walkable[i][j])) << " ";
             } else {
                 fullmap << (wallmanager.walked[i][j] == 7 ? wallmanager.walked[i][j] : wallmanager.walkable[i][j]) << " ";
             }
