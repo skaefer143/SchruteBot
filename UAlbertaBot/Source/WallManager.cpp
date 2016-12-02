@@ -387,7 +387,20 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
 void WallManager::checkForPreBuiltWall(){
 	//check for maps we have prebuilt wall coordinates for, and set those as the coordinates
 	if (Broodwar->mapFileName() == "(2)Benzene.scx"){
-		Broodwar->printf("the check works");
+		Broodwar->printf("location: x:$d y:%d", BWTA::getStartLocation(Broodwar->self())->getPosition().x, BWTA::getStartLocation(Broodwar->self())->getPosition().y);
+
+		//First Position, lower left of map
+		//need 2 supply depots, that's it. 
+		//first one at 490, 2408
+		//second at 591, 2380
+		//keeps SCV's out, which means zealots can't get through either. Marines can get through though.
+
+		//Second Position, top right of map
+		//need a barracks and 2 supply depots
+		//first supply depot at 3536, 1120
+		//second supply depot at 3594, 1060
+		//barracks at 3407, 1160
+		//scv's can get in on top right corner, marines all over
 	}
 	else if (Broodwar->mapFileName() == "(2)Heartbreak Ridge.scx"){
 		Broodwar->printf("the check works");
