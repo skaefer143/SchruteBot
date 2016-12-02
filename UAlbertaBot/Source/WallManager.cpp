@@ -13,6 +13,9 @@ WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region clos
     //closeRegion = close;
     //farRegion = farSide;
 
+	checkForPreBuiltWall();
+
+
     y = x = yGoal = xGoal = 0;
     // Generate a bounding box around the point we want to defend
     box = buildBoundingBox(defensePoint);
@@ -379,6 +382,23 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
         }
     }
     return false;
+}
+
+void WallManager::checkForPreBuiltWall(){
+	//check for maps we have prebuilt wall coordinates for, and set those as the coordinates
+	if (Broodwar->mapFileName() == "(2)Benzene.scx"){
+		Broodwar->printf("the check works");
+	}
+	else if (Broodwar->mapFileName() == "(2)Heartbreak Ridge.scx"){
+		Broodwar->printf("the check works");
+
+	}
+	else if (Broodwar->mapFileName() == "(2)Destination.scx"){
+		Broodwar->printf("the check works");
+	}
+	else {
+		Broodwar->printf("%s", Broodwar->mapFileName());
+	}
 }
 
 int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
