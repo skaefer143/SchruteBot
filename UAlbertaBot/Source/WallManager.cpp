@@ -266,6 +266,9 @@ BWAPI::TilePosition  WallManager::getBarracks(){
 BWAPI::TilePosition	 WallManager::getSupplyDepot2(){
     return SupplyDepot2;
 }
+BWAPI::TilePosition	 WallManager::getFactory(){
+	return Factory;
+}
 
 
 // Map out the placement of the building so we can reference it later

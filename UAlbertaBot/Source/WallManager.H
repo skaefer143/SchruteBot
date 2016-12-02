@@ -34,6 +34,7 @@ public:
     BWAPI::TilePosition getSupplyDepot1();
     BWAPI::TilePosition getBarracks();
     BWAPI::TilePosition	getSupplyDepot2();
+	BWAPI::TilePosition	getFactory();
     BoundingBox box;
     friend std::ostream &operator<<(std::ostream & out, const WallManager & wm_in);
 private:
@@ -45,6 +46,7 @@ private:
     BWAPI::TilePosition SupplyDepot1;
     BWAPI::TilePosition Barracks;
     BWAPI::TilePosition SupplyDepot2;
+	BWAPI::TilePosition Factory;
     std::vector<BWAPI::TilePosition> buildingPos;
     BWAPI::Region closeRegion;
     BWAPI::Region farRegion;

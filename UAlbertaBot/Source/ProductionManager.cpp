@@ -100,7 +100,11 @@ void ProductionManager::update()
 				_buildingsInWallToBuild++;
 				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks, true), true);
 			}
-			
+			_factoryLocation = _wallMan.getFactory();
+			if (_factoryLocation.x != 0 && _factoryLocation.y != 0){
+				_buildingsInWallToBuild++;
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Factory, true), true);
+			}
 			
 		}
 
@@ -235,13 +239,18 @@ void ProductionManager::manageBuildOrderQueue()
 					desiredPosition = _barrackLocation;
 				}
 				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getName()){
-					if (_buildingsInWallToBuild <= 1){
+					if (_supply1Built){
 						//requires that supply depot 2 is the last building to build in wall
 						desiredPosition = _supply2Location;
+						_supply2Built = true;
 					}
 					else{
 						desiredPosition = _supply1Location;
+						_supply1Built = true;
 					}
+				}
+				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Factory).getName()){
+					desiredPosition = _factoryLocation;
 				}
 				//BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
 				_wallBuildingLocation = desiredPosition;

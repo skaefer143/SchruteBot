@@ -26,9 +26,10 @@ class ProductionManager
 	BWAPI::TilePosition	_wallBuildingLocation;
 	BWAPI::TilePosition	_barrackLocation;
 	BWAPI::TilePosition	_supply1Location;
-	bool				_supply1Built;
+	bool				_supply1Built = false;
 	BWAPI::TilePosition	_supply2Location;
-	bool				_supply2Built;
+	bool				_supply2Built = false;
+	BWAPI::TilePosition	_factoryLocation;
 	int					_buildingsInWallToBuild;
 	WallManager			_wallMan;
     
