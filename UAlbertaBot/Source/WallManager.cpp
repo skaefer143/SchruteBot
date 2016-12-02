@@ -63,31 +63,40 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
 
     int newX;
     int newY;
+
     for (size_t i = 0; i < box.map.size(); ++i){
-        
+
         for (size_t j = 0; j < box.map.size(); ++j){
             box.map[j][i] = BWAPI::Broodwar->isBuildable(i + startTileX, j + startTileY);
-            
-            newX = (i + startTileX);
-            newY = (j + startTileY);
+        }
+    }
 
+    for (size_t i = 0; i < walkable.size(); ++i){
+        
+        for (size_t j = 0; j < walkable.size(); ++j){
+            
+            newX = (i + startTileX-1);
+            newY = (j + startTileY-1);
+
+            bool canWalk = BWTA::getGroundDistance(BWAPI::TilePosition(newX, newY), BWAPI::TilePosition(newX,  newY + 1)) > -1;
             // Let's see if for every buildable tile we can walk to it
             // the problem with this is it's not high enough resolution
             /*bool top = BWTA::isConnected(newX, newY, newX, newY - 1);
             bool bottom = BWTA::isConnected(newX, newY, newX, newY + 1);
             bool left = BWTA::isConnected(newX, newY, newX - 1, newY);
             bool right = BWTA::isConnected(newX, newY, newX+1, newY);*/
-            int current = BWAPI::Broodwar->getGroundHeight(newX, newY);
+           /* int current = BWAPI::Broodwar->getGroundHeight(newX, newY);
             bool top = BWAPI::Broodwar->getGroundHeight(newX, newY - 1) - current < 3;
             bool bottom = BWAPI::Broodwar->getGroundHeight(newX, newY + 1) - current < 3;
             bool left = BWAPI::Broodwar->getGroundHeight(newX - 1, newY) - current < 3;
-            bool right = BWAPI::Broodwar->getGroundHeight(newX + 1, newY) - current < 3;
-
-            bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
+            bool right = BWAPI::Broodwar->getGroundHeight(newX + 1, newY) - current < 3;*/
+            //* top * bottom * left * right
+            /*bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
             bool topRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4);
             bool bottomLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4 +1);
-            bool bottomRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4 +1);
-            walkable[j][i] = (topLeft * topLeft * bottomRight * bottomLeft * top * bottom * left * right);
+            bool bottomRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4 +1);*/
+            //(topLeft * topLeft * bottomRight * bottomLeft )
+            walkable[j][i] = canWalk;
         }
     }
     return box;
@@ -112,22 +121,20 @@ void WallManager::findWall(int depth){
         count++;
 
         if (!canWalk){
-            
+            debug << *this;
 
             //lift barracks somehow, can we still pass through?
             bool canWalk = floodFillInit(0, 0, 2);
 
             if (canWalk){
-                debug << *this;
+                
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
-              
+                debug << *this;
                 BWAPI::Broodwar->printf("Size of buildingPos %d", buildingPos.size());
                 Barracks = buildingPos[0];
                 SupplyDepot1 = buildingPos[1];
                 SupplyDepot2 = buildingPos[2];
-            } else {
-                debug << *this;
             }
         }
         return;
@@ -160,18 +167,18 @@ void WallManager::findWall(int depth){
 
 bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
     bool neighbour = false;
-    Building here;
+    Building building;
     BWAPI::TilePosition currentTile = BWAPI::TilePosition(x + box.start.x, y + box.start.y);
     //Don't know how to get that information
     if (depth == 0){
         UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Barracks).getUnitType();
-        Building here = Building(unit, currentTile);
+        building = Building(unit, currentTile);
     }
     else{
         UnitType unit = MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getUnitType();
-        Building here = Building(unit, currentTile);
+        building = Building(unit, currentTile);
     }
-    if (!BuildingPlacer::Instance().canBuildHere(currentTile, here)){
+    if (!BuildingPlacer::Instance().canBuildHere(currentTile, building)){
         return neighbour;
     }
     if (box.map[y][x] != 1){
@@ -211,7 +218,13 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
                 if (deltaX >= box.map.size() || deltaY >= box.map.size()){
                     continue;
                 }
-
+                // Check to see if the building will be in a resource zone
+                BWAPI::Unitset set = BWAPI::Broodwar->getUnitsOnTile(box.start.x + i, box.start.y + j);
+                for (auto unit : set){
+                    if (unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser){
+                        return false;
+                    }
+                }
                 // Prevent overlapping buildings
                 if (box.map[j][i] != 1){
                     return false;
@@ -270,12 +283,12 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
     int height = BWAPI::Broodwar->mapHeight();
     
     //Debug stuff
-    walked.empty();
+    //walked.empty();
     for (size_t i = 0; i < walked.size(); ++i){
         for (size_t j = 0; j < walked.size(); ++j){
             //walked[j][i] = BWTA::getGroundDistance(BWAPI::TilePosition(box.start.x + i ,box.start.y + j), BWAPI::TilePosition(box.start.x + i, box.start.y +j+1));
-            //walked[i][j] = 1;
-           walked[j][i] = BWAPI::Broodwar->getRegionAt((box.start.x +i)*32, (box.start.y+j)*32)->getID();
+                //walked[j][i] = BWAPI::Broodwar->getRegionAt((box.start.x + i)*32, (box.start.y+j)*32)->getID();
+            walked[j][i] = 0;
         }
     }
     // Generate key for map
@@ -297,9 +310,9 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
             }
         }
         y = yGoal;
-        int xGoal = 15;
-        for (size_t i = 15; i > 0; --i){
-            yGoal = findGoodYPos(i, 15, -1);
+        int xGoal = 17;
+        for (size_t i = 17; i > 0; --i){
+            yGoal = findGoodYPos(i, 17, -1);
             if (yGoal>-1){
                 xGoal = i;
                 break;
@@ -320,11 +333,10 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
 bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal, int yGoal, int barracks) const{
     int width = BWAPI::Broodwar->mapWidth();
     int height = BWAPI::Broodwar->mapHeight();
-    //walked[y][x] = 0;
-    if (x < 0 || x >= width){
+    if (x < 0 || x >= walkable.size()){
         // Bounds check for x
         return false;
-    } else if (y < 0 || y >= height){
+    } else if (y < 0 || y >= walkable.size()){
         // Bounds check for y
         return false;
     /*} else if (!canFit(size, x, y)){
@@ -335,31 +347,37 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
     //} else if(y < box.start.y){
     //    // reached min y
     //    return false; 
-    } else if(y > box.map.size()){
+    } else if(y >= walkable.size()){
         return false;
-    } else if(x > box.map.size()){
+    } else if(x >= walkable.size()){
+        return false;
+    } 
+    walked[y][x] = 0;
+    if (walkable[y][x] != 1){
         return false;
     }
-
-
-    else if (walkable[y][x] != 1  || box.map[y][x] > barracks){
-        return false;
+    if (y > 0 && y< 17 && x > 0 && x < 17){
+        if (box.map[y - 1][x - 1] > barracks){
+            return false;
+        }
     }
-    //walked[y][x] = 1;
+    walked[y][x] = 1;
     if(x == xGoal && y == yGoal){
         return true;
     } else{
         // North
-        //floodFill(size, x, y - 1, group, tile);
-        
+       /* if (floodFill(x, y - 1, tileNumber, xGoal, yGoal, barracks)){
+            return true;
+        }*/
+        if (floodFill(x + 1, y, tileNumber, xGoal, yGoal, barracks)){
+            return true;
+        }
         // South 
         if (floodFill(x, y+1, tileNumber, xGoal, yGoal, barracks)){
             return true;
         }
         //East
-        if (floodFill(x+1, y, tileNumber, xGoal, yGoal, barracks)){
-            return true;
-        }
+        
         // West
         // floodFill(size, x - 1, y, group, tile);
     }
@@ -371,7 +389,12 @@ int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
     int yPos;
     for (int i = 0; i < max; ++i){
         yPos = y + travelDirection*i;
-        if (walkable[yPos][x] == 1 && box.map[yPos][x] == 1){
+        if (yPos > 0 && yPos< 17 && x > 0 && x < 17){
+            if (box.map[yPos - 1][x - 1] != 1){
+                continue;
+            }
+        }
+        if (walkable[yPos][x] == 1){
             return yPos;
         }
     }
@@ -400,24 +423,24 @@ std::ostream& operator<<(std::ostream & out, const WallManager & wallmanager){
     for (size_t i = 0; i < box.map.size(); ++i){
         for (size_t j = 0; j < box.map.size(); ++j){
             buildings << box.map[i][j] << " ";
+            
+        }
+        out << buildings.rdbuf() <<  std::endl;
+        buildings.clear();
+        
+    }
+
+    out << "Is Walkable" << std::endl;
+    for (size_t i = 0; i < wallmanager.walkable.size(); ++i){
+        for (size_t j = 0; j < wallmanager.walkable[i].size(); ++j){
             walkable << wallmanager.walkable[i][j] << " ";
             walked << wallmanager.walked[i][j] << " ";
         }
-
-        out << buildings.rdbuf() << "\t" << walkable.rdbuf() << "\t" << walked.rdbuf() << std::endl;
-        buildings.clear();
+        out << walkable.rdbuf() << "\t" << walked.rdbuf() << std::endl;
         walkable.clear();
         walked.clear();
     }
-
-    /*out << "Is Walkable" << std::endl;
-    for (size_t i = 0; i < wallmanager.walkable.size(); ++i){
-        for (size_t j = 0; j < wallmanager.walkable[i].size(); ++j){
-            out << wallmanager.walkable[i][j] << " ";
-        }
-        out << std::endl;
-    }
-
+    /*
     out << "Walked" << std::endl;
     for (size_t i = 0; i < wallmanager.walked.size(); ++i){
         for (size_t j = 0; j < wallmanager.walked[i].size(); ++j){
