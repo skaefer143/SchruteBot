@@ -13,26 +13,31 @@ WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region clos
     //closeRegion = close;
     //farRegion = farSide;
 
-	checkForPreBuiltWall();
+	// Dimensions of a Barracks
+	buildingSize[0][0] = 4; // Width
+	buildingSize[0][1] = 3; // Height
 
+	// Dimensions of a SupplyDepot
+	buildingSize[1][0] = 3; // Width
+	buildingSize[1][1] = 2; // Height
 
-    y = x = yGoal = xGoal = 0;
-    // Generate a bounding box around the point we want to defend
-    box = buildBoundingBox(defensePoint);
-    buildings[0] = 2;
-    buildings[1] = 3;
-    buildings[2] = 3;
-    // Dimensions of a Barracks
-    buildingSize[0][0] = 4; // Width
-    buildingSize[0][1] = 3; // Height
+	// Dimensions of a SupplyDepot
+	buildingSize[2][0] = 3; // Width
+	buildingSize[2][1] = 2; // Height
 
-    // Dimensions of a SupplyDepot
-    buildingSize[1][0] = 3; // Width
-    buildingSize[1][1] = 2; // Height
-
-    // Dimensions of a SupplyDepot
-    buildingSize[2][0] = 3; // Width
-    buildingSize[2][1] = 2; // Height
+	if (checkForPreBuiltWall()){
+		//build the wall
+		foundWall = true;
+	}
+	else {
+		y = x = yGoal = xGoal = 0;
+		// Generate a bounding box around the point we want to defend
+		box = buildBoundingBox(defensePoint);
+		buildings[0] = 2;
+		buildings[1] = 3;
+		buildings[2] = 3;
+		
+	}
 }
 
 BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
@@ -383,10 +388,10 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
     return false;
 }
 
-void WallManager::checkForPreBuiltWall(){
+bool WallManager::checkForPreBuiltWall(){
 	//check for maps we have prebuilt wall coordinates for, and set those as the coordinates
 	if (Broodwar->mapFileName() == "(2)Benzene.scx"){
-		Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
+		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		BWAPI::Position startLocation = BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter();
 		if (startLocation == BWAPI::Position(3683, 541)){
 			Broodwar->printf("top right");
@@ -396,6 +401,10 @@ void WallManager::checkForPreBuiltWall(){
 			//second supply depot at 3594, 1060
 			//barracks at 3407, 1160
 			//scv's can get in on top right corner, marines all over
+			SupplyDepot1 = BWAPI::TilePosition(BWAPI::Position(3536, 1120));
+			SupplyDepot2 = BWAPI::TilePosition(BWAPI::Position(3594, 1060));
+			Barracks = BWAPI::TilePosition(BWAPI::Position(3407, 1160));
+			return true;
 		}
 		else if (startLocation == BWAPI::Position(405, 3007)){
 			Broodwar->printf("lower left");
@@ -404,18 +413,25 @@ void WallManager::checkForPreBuiltWall(){
 			//first one at 490, 2408
 			//second at 591, 2380
 			//keeps SCV's out, which means zealots can't get through either. Marines can get through though.
+			SupplyDepot1 = BWAPI::TilePosition(BWAPI::Position(490, 2408));
+			SupplyDepot2 = BWAPI::TilePosition(BWAPI::Position(591, 2380));
+			return true;
 		}
 		
 	}
 	else if (Broodwar->mapFileName() == "(2)Heartbreak Ridge.scx"){
+		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		Broodwar->printf("the check works");
-
+		return false;
 	}
 	else if (Broodwar->mapFileName() == "(2)Destination.scx"){
+		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		Broodwar->printf("the check works");
+		return false;
 	}
 	else {
 		Broodwar->printf("%s", Broodwar->mapFileName());
+		return false;
 	}
 }
 

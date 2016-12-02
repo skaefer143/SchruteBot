@@ -70,7 +70,7 @@ void ProductionManager::update()
 
 	//if we haven't built our first wall near our main base yet, build it!
 	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
-		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 7) {
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 6) {
 		
 
 		_currentlyBuildingWall = true;
