@@ -18,12 +18,14 @@ class MetaType
 	BWAPI::UnitType         _unitType;
 	BWAPI::TechType         _techType;
 	BWAPI::UpgradeType      _upgradeType;
+	bool					_partOfWall = false;
 
 public:
 
 	MetaType ();
     MetaType (const std::string & name);
 	MetaType (BWAPI::UnitType t);
+	MetaType(BWAPI::UnitType t, bool partOfWall);
 	MetaType (BWAPI::TechType t);
 	MetaType (BWAPI::UpgradeType t);
 
@@ -33,6 +35,7 @@ public:
 	bool    isCommand()	    const;
 	bool    isBuilding()	const;
 	bool    isRefinery()	const;
+	bool	isPartOfWall()	const;
     
     const size_t & type() const;
     const BWAPI::Race & getRace() const;
