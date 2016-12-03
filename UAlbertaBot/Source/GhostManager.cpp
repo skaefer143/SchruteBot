@@ -50,9 +50,15 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 
 				// if building but not mineral or geyser, and nuke is available: paint nuke target
 				if (target->getType().isBuilding && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field) && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_2)
-					&& (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_3) && (target->getType != BWAPI::UnitTypes::Resource_Vespene_Geyser)){
-					// still need to determine if nuke is available
-					ghost->useTech(BWAPI::TechTypes::Nuclear_Strike, target);
+					&& (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_3) && (target->getType != BWAPI::UnitTypes::Resource_Vespene_Geyser) && 
+					BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile) > 0){
+						ghost->useTech(BWAPI::TechTypes::Nuclear_Strike, target);
+					
+				}
+				else if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile) == 0){
+					// no nukes, might as well attack something
+					//Micro::SmartAttackUnit(ghost, target);
+					Micro::SmartKiteTarget(ghost, target);
 				}
 
 			}
