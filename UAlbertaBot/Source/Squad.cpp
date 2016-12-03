@@ -65,6 +65,7 @@ void Squad::update()
 		_rangedManager.execute(_order);
         _tankManager.execute(_order);
         _medicManager.execute(_order);
+		_ghostManager.execute(_order);
 		_transportManager.update();
 
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
@@ -145,24 +146,32 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset transportUnits;
     BWAPI::Unitset tankUnits;
     BWAPI::Unitset medicUnits;
+	BWAPI::Unitset ghostUnits;
 
 	// add _units to micro managers
 	for (auto & unit : _units)
 	{
 		if(unit->isCompleted() && unit->getHitPoints() > 0 && unit->exists())
 		{
-			// select dector _units
+			// select doctor _units
             if (unit->getType() == BWAPI::UnitTypes::Terran_Medic)
             {
                 medicUnits.insert(unit);
             }
+			//select tank units
             else if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode || unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
             {
                 tankUnits.insert(unit);
             }   
+			//select detector units
 			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
+			}
+			//select ghost units 
+			else if (unit->getType() == BWAPI::UnitTypes::Terran_Ghost)
+			{
+				ghostUnits.insert(unit);
 			}
 			// select transport _units
 			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Shuttle || unit->getType() == BWAPI::UnitTypes::Terran_Dropship)
@@ -188,6 +197,7 @@ void Squad::addUnitsToMicroManagers()
 	_transportManager.setUnits(transportUnits);
     _tankManager.setUnits(tankUnits);
     _medicManager.setUnits(medicUnits);
+	_ghostManager.setUnits(ghostUnits);
 }
 
 // calculates whether or not to regroup

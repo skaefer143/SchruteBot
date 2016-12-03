@@ -17,11 +17,12 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
+    int siegeTankMinRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().minRange() + 45;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
 
-	// for each zealot
+	// for each tank
 	for (auto & tank : tanks)
 	{
 		// train sub units such as scarabs or interceptors
@@ -40,10 +41,11 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
         {
+			//BWAPI::Broodwar->printf("this tank is not ordered to defend the wall");
 			// if there are targets
 			if (!tankTargets.empty())
 			{
-				// find the best target for this zealot
+				// find the best target for this tank
 				BWAPI::Unit target = getTarget(tank, tankTargets);
 
                 if (target && Config::Debug::DrawUnitTargetInfo) 
@@ -51,13 +53,18 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		            BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
 
-                // if we are within siege range, siege up
-                if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
+                // if we are within siege range, but beyond the minimum range, siege up
+                if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint && 
+                    tank->getDistance(target) > siegeTankMinRange)
+				//if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
                 {
                     tank->siege();
                 }
-                // otherwise unsiege and move in
-                else if ((!target || tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+                // otherwise unsiege and move
+                //else if ((!target || (tank->getDistance(target) > siegeTankRange || 
+                //    tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
+				//else if (!target || (tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
+				else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
                 {
                     tank->unsiege();
                 }
@@ -92,6 +99,70 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 			}
 		}
+		// if order is to defend the wall
+		if (order.getType() == SquadOrderTypes::WallDefend)
+
+		{
+			//BWAPI::Broodwar->printf("this tank is ordered to defend the wall");
+			// if there are targets
+			if (!tankTargets.empty())
+			{
+				// find the best target for this tank
+				BWAPI::Unit target = getTarget(tank, tankTargets);
+
+				if (target && Config::Debug::DrawUnitTargetInfo)
+				{
+					BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
+				}
+
+				// if we are within siege range, but beyond the minimum range, siege up
+				if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint &&
+					tank->getDistance(target) > siegeTankMinRange)
+					//if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
+				{
+					tank->siege();
+				}
+				// otherwise unsiege and move
+				
+				//else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
+				//{
+				////	tank->unsiege();
+				//}
+
+
+				// if we're in siege mode just attack the target
+				if (tank->isSieged())
+				{
+					Micro::SmartAttackUnit(tank, target);
+				}
+				
+			}
+			// if there are no targets
+			else
+			{
+				// if we're not near the order position
+				if (tank->getDistance(order.getPosition()) > 500)
+				{
+					//BWAPI::Broodwar->printf("tank is at %d , %d and is moving to %d , %d", tank->getPosition().x, tank->getPosition().y, order.getPosition().x, order.getPosition().y);
+					if (tank->canUnsiege())
+					{
+						tank->unsiege();
+					}
+					else
+					{
+						// move to it
+						Micro::SmartMove(tank, order.getPosition());
+					}
+				}
+				else{
+					//BWAPI::Broodwar->printf("tank has arrived");
+					if (tank->canSiege()){
+						tank->siege();
+					}
+				}
+			}
+		}
+
 	}
 }
 

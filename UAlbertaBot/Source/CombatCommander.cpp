@@ -8,6 +8,7 @@ const size_t AttackPriority = 1;
 const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
+const size_t TankDefensePriority = 5;
 
 CombatCommander::CombatCommander() 
     : _initialized(false)
@@ -37,6 +38,13 @@ void CombatCommander::initializeSquads()
         _squadData.addSquad("Drop", Squad("Drop", zealotDrop, DropPriority));
     }
 
+	// add a defensive squad is we are using a tank defence (or walling) strategy
+	if (Config::Strategy::StrategyName == "Terran_TankDefense")
+	{
+		SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, ourBasePosition, 800, "To the wall!");
+		_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenseOrder, TankDefensePriority));
+	}
+
     _initialized = true;
 }
 
@@ -65,6 +73,7 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
         updateIdleSquad();
         updateDropSquads();
         updateScoutDefenseSquad();
+		updateTankDefenseSquad();
 		updateDefenseSquads();
 		updateAttackSquads();
 	}
@@ -232,6 +241,72 @@ void CombatCommander::updateScoutDefenseSquad()
         scoutDefenseSquad.clear();
     }
 }
+
+
+void CombatCommander::updateTankDefenseSquad()
+{
+	if (Config::Strategy::StrategyName != "Terran_TankDefense")
+	{
+		return;
+	}
+
+	Squad & tankDSquad = _squadData.getSquad("TankDefenders");
+	//int numberOfTanks = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
+	
+	// figure out how many units the tank squad needs
+	int tankDefenseSize = 2; // limit the size of the tank squad
+	auto & tankUnits = tankDSquad.getUnits();
+
+	//find out how much room is left in the squad
+	for (auto & unit : tankUnits)
+	{
+		tankDefenseSize -= 1;
+	}
+
+	// if there are still units to be added to the tank squad, do it
+	if (tankDefenseSize > 0)
+	{
+		// take our first amount of tanks and add them to the tank squad
+		for (auto & unit : _combatUnits)
+		{
+			// get tanks and assign them to the squad
+			if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode && _squadData.canAssignUnitToSquad(unit, tankDSquad)){
+				_squadData.assignUnitToSquad(unit, tankDSquad);
+				tankDefenseSize -= 1;
+			}
+		}
+	}
+	
+
+	// otherwise the tank squad is full, so execute the order
+	else
+	{
+		SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, getChokePointToDefend(), 800, "Defending the wall!");
+		tankDSquad.setSquadOrder(tankDefenseOrder);
+		//BWAPI::Broodwar->printf("status of the tank defense squad is %s",tankDefenseOrder.getStatus());
+	}
+	
+
+	/*
+	for (auto & unit : _combatUnits)
+	{
+		if (numberOfTanks < 2 || numberOfTanks > 2) // cap the number of wall defense tanks
+		{
+			continue;
+		}
+
+		// get every tank unit, and assign it to the wall denfense squad
+		if ( (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode) && _squadData.canAssignUnitToSquad(unit, tankDSquad))
+		{
+			_squadData.assignUnitToSquad(unit, tankDSquad);
+			SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, getChokePointToDefend(), 800, "Defending the wall!");
+			tankDSquad.setSquadOrder(tankDefenseOrder);
+		}
+	}
+	*/
+}
+
+
 
 void CombatCommander::updateDefenseSquads() 
 {
@@ -457,6 +532,12 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 BWAPI::Position CombatCommander::getDefendLocation()
 {
 	return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
+}
+
+BWAPI::Position CombatCommander::getChokePointToDefend()
+{
+	// for now, only return the nearest chokepoint. will try for multiple chokepoints later.
+	return BWTA::getNearestChokepoint(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
 }
 
 void CombatCommander::drawSquadInformation(int x, int y)

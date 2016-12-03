@@ -74,12 +74,14 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
+
     char red = '\x08';
     char green = '\x07';
     char white = '\x04';
-
+	//BWAPI::Broodwar->printf("Marc-Olivier Lajeunesse 1302401");
     if (!Config::ConfigFile::ConfigFileFound)
     {
+		
         BWAPI::Broodwar->drawBoxScreen(0,0,450,100, BWAPI::Colors::Black, true);
         BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
         BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Not Found", red, Config::BotInfo::BotName.c_str());
