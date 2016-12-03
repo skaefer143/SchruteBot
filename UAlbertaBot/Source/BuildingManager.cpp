@@ -273,13 +273,13 @@ void BuildingManager::checkWallLiftStatus(){
 	LiftingManager liftMan = LiftingManager::Instance();
 	for (Building & b : _buildings){
 		if (b.buildingUnit->isLifted()){
-			liftMan.checkForSetDown();
+			liftMan.checkForSetDown(b);
 		}
 		else if (b.buildingUnit->isCompleted() && b.isPartOfWall && !b.buildingUnit->isLifted() 
 			&& b.buildingUnit->getType().getRace() == BWAPI::Races::Terran){
 
 			//lift wall, in lifting manager
-			liftMan.checkForLiftOff();
+			liftMan.checkForLiftOff(b);
 		}
 	}
 	
