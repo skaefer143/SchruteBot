@@ -255,7 +255,9 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	}
 	else if (Config::Strategy::StrategyName == "Terran_Ghost"){
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Wraith, 4));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 4));
+
 		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Command_Center) > BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo)){
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Nuclear_Silo, numNukeSilos + 1));
 		}
