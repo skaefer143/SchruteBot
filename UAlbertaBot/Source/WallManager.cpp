@@ -433,10 +433,8 @@ bool WallManager::checkForPreBuiltWall(){
 		Broodwar->printf("the check works");
 		return false;
 	}
-	else {
-		Broodwar->printf("%s", Broodwar->mapFileName());
-		return false;
-	}
+	Broodwar->printf("%s", Broodwar->mapFileName());
+	return false;
 }
 
 int WallManager::findGoodYPos(int x, int y, int travelDirection) const{
