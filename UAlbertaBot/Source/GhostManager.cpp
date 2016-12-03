@@ -20,37 +20,38 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 	//set the range of the ghost
 	int ghostRange = BWAPI::UnitTypes::Terran_Ghost.groundWeapon().maxRange() - 16;
 	//set energy requirements
-	int cloakingEnergy = BWAPI::UnitTypes::Terran_Ghost.cloakingTech().energyCost;
+	int cloakingEnergy = BWAPI::UnitTypes::Terran_Ghost.cloakingTech().energyCost();
 	int lockdownEnergy = BWAPI::TechTypes::Lockdown.energyCost();
 
 
 	for (auto & ghost : ghosts)
 	{
+		// find the best target for this ghost
+		BWAPI::Unit target = getTarget(ghost, ghostTargets);
 		if (order.getType() == SquadOrderTypes::Attack)
 		{
 			// if attacking, do not attack units
 
-			// find the best target for this tank
-			BWAPI::Unit target = getTarget(ghost, ghostTargets);
+			
 			if (!targets.empty())
 			{
 
 				
 				// cloak
-				if (ghost->getDistance(target) < 2 * ghostRange && !ghost->isCloaked && ghost->canCloak() && ghost->getEnergy > 1.5*cloakingEnergy){
+				if ((ghost->getDistance(target) < 2 * ghostRange) && !(ghost->isCloaked()) && ghost->canCloak() && (ghost->getEnergy() > 1.5*cloakingEnergy)){
 
 					ghost->cloak();
 				}
 
 				//lockdown enemy carriers
-				if (target->getType == BWAPI::UnitTypes::Protoss_Carrier && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy + cloakingEnergy){
+				if ((target->getType() == BWAPI::UnitTypes::Protoss_Carrier) && !(target->isLockedDown()) && (ghost->getEnergy() > (lockdownEnergy + cloakingEnergy))){
 					//maybe check if the tech has been researched or ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
 
 				// if building but not mineral or geyser, and nuke is available: paint nuke target
-				if (target->getType().isBuilding && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field) && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_2)
-					&& (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_3) && (target->getType != BWAPI::UnitTypes::Resource_Vespene_Geyser) && 
+				if (target->getType().isBuilding() && (target->getType() != BWAPI::UnitTypes::Resource_Mineral_Field) && (target->getType() != BWAPI::UnitTypes::Resource_Mineral_Field_Type_2)
+					&& (target->getType() != BWAPI::UnitTypes::Resource_Mineral_Field_Type_3) && (target->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser) && 
 					BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile) > 0){
 						ghost->useTech(BWAPI::TechTypes::Nuclear_Strike, target);
 					
@@ -71,8 +72,7 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 		}
 		else if (order.getType() == SquadOrderTypes::Defend)
 		{
-			// find the best target for this tank
-			BWAPI::Unit target = getTarget(ghost, ghostTargets);
+		
 
 			//for all targets
 			// if target is carrier, lock it down
@@ -83,18 +83,18 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 			if (!targets.empty())
 			{
 				//lockdown enemy carriers
-				if (target->getType == BWAPI::UnitTypes::Protoss_Carrier && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+				if (target->getType() == BWAPI::UnitTypes::Protoss_Carrier && !target->isLockedDown() && ghost->getEnergy() > lockdownEnergy){
 					//maybe check if the tech has been researchedor ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
 				//lockdown enemy battle cruisers
-				if (target->getType == BWAPI::UnitTypes::Terran_Battlecruiser && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+				if (target->getType() == BWAPI::UnitTypes::Terran_Battlecruiser && !target->isLockedDown() && ghost->getEnergy() > lockdownEnergy){
 					//maybe check if the tech has been researchedor ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
 				//lockdown enemy tanks
-				if ((target->getType == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode || target->getType == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode) && 
-					!target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+				if ((target->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode || target->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode) && 
+					!target->isLockedDown() && ghost->getEnergy() > lockdownEnergy){
 					//maybe check if the tech has been researched or ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
