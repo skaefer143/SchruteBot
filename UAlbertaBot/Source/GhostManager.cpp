@@ -26,30 +26,41 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 
 	for (auto & ghost : ghosts)
 	{
-		bool ghostNearEnemy = false;
 		if (order.getType() == SquadOrderTypes::Attack)
 		{
 			// if attacking, do not attack units
 
 			// find the best target for this tank
 			BWAPI::Unit target = getTarget(ghost, ghostTargets);
-			if (!targets.empty()){
+			if (!targets.empty())
+			{
 
 				
 				// cloak
 				if (ghost->getDistance(target) < 2 * ghostRange && !ghost->isCloaked && ghost->canCloak() && ghost->getEnergy > 1.5*cloakingEnergy){
-					ghostNearEnemy = true;
+
 					ghost->cloak();
 				}
 
 				//lockdown enemy carriers
 				if (target->getType == BWAPI::UnitTypes::Protoss_Carrier && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy + cloakingEnergy){
-					//maybe check if the tech has been researched?
+					//maybe check if the tech has been researched or ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
 
 				// if building but not mineral or geyser, and nuke is available: paint nuke target
+				if (target->getType().isBuilding && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field) && (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_2)
+					&& (target->getType != BWAPI::UnitTypes::Resource_Mineral_Field_Type_3) && (target->getType != BWAPI::UnitTypes::Resource_Vespene_Geyser)){
+					// still need to determine if nuke is available
+					ghost->useTech(BWAPI::TechTypes::Nuclear_Strike, target);
+				}
 
+			}
+			else
+			{
+				if (ghost->getDistance(order.getPosition()) > 50){
+					Micro::SmartAttackMove(ghost, order.getPosition());
+				}
 			}
 		}
 		else if (order.getType() == SquadOrderTypes::Defend)
@@ -62,6 +73,36 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 			// if target is battlecruiser, lock it down
 			// if target is tank, lock it down
 			// else, kill it
+			BWAPI::Unit target = getTarget(ghost, ghostTargets);
+			if (!targets.empty())
+			{
+				//lockdown enemy carriers
+				if (target->getType == BWAPI::UnitTypes::Protoss_Carrier && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+					//maybe check if the tech has been researchedor ability is available?
+					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
+				}
+				//lockdown enemy battle cruisers
+				if (target->getType == BWAPI::UnitTypes::Terran_Battlecruiser && !target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+					//maybe check if the tech has been researchedor ability is available?
+					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
+				}
+				//lockdown enemy tanks
+				if ((target->getType == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode || target->getType == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode) && 
+					!target->isLockedDown() && ghost->getEnergy > lockdownEnergy){
+					//maybe check if the tech has been researched or ability is available?
+					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
+				}
+				// kite the target
+				else{
+					Micro::SmartKiteTarget(ghost, target);
+				}
+			}
+			else
+			{
+				if (ghost->getDistance(order.getPosition()) > 50){
+					Micro::SmartAttackMove(ghost, order.getPosition());
+				}
+			}
 		}
 	}
 }
