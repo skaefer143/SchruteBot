@@ -8,8 +8,14 @@ LiftingManager & LiftingManager::Instance()
 	return instance;
 }
 
-void LiftingManager::update(){
-	//check if any wall buildings need to be lifted
+void LiftingManager::checkForLiftOff(){
+	//check if wall needs to be lifted, and lift the building
+
+
+}
+
+void LiftingManager::checkForSetDown(){
+	//set down a wall building
 
 
 }

@@ -6,6 +6,7 @@
 #include "InformationManager.h"
 #include "MapTools.h"
 #include "WallManager.H"
+#include "LiftingManager.h"
 
 namespace UAlbertaBot
 {
@@ -29,6 +30,7 @@ class BuildingManager
     void            checkForStartedConstruction();			// STEP 4
     void            checkForDeadTerranBuilders();			// STEP 5
     void            checkForCompletedBuildings();			// STEP 6
+	void			checkWallLiftStatus();			// Wall Step
 
     char            getBuildingWorkerCode(const Building & b) const;
     

@@ -10,7 +10,6 @@
 #include "ScoutManager.h"
 #include "StrategyManager.h"
 #include "TimerManager.h"
-#include "LiftingManager.h"
 
 namespace UAlbertaBot
 {
