@@ -17,5 +17,8 @@ namespace UAlbertaBot
 
 	private:
 
+		bool	enemyUnitsNear(Building b);
+		bool	myUnitsNear(Building b);
+		bool	unitsTryingToGoThroughWall(Building b);
 	};
 }

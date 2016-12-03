@@ -17,12 +17,14 @@ void LiftingManager::checkForLiftOff(Building b){
 		if (b.buildingUnit->getType() == BWAPI::UnitTypes::Terran_Barracks 
 			|| b.buildingUnit->getType() == BWAPI::UnitTypes::Terran_Factory){
 			
-			//check if one of our units is attempting to go through the wall, but can't
-
-			//LIFT
-			//UnitCommand::lift(b.buildingUnit);
+			if (enemyUnitsNear(b)){
+				return;
+			}
+			//check if one of our units is attempting to go through the wall
+			if (unitsTryingToGoThroughWall(b)){
+				UnitCommand::lift(b.buildingUnit);
+			}
 		}
-
 	}
 }
 
@@ -31,11 +33,31 @@ void LiftingManager::checkForSetDown(Building b){
 
 	//double checks that wall is lifted
 	//if enemies are nearby, or no units are attempting to get through wall
-	if (b.buildingUnit->isLifted()){
-
-
-
-
-		//UnitCommand::land(b.buildingUnit, b.buildingUnit->getInitialTilePosition());
+	if (b.buildingUnit->isLifted() && !enemyUnitsNear(b) && unitsTryingToGoThroughWall(b)){
+		UnitCommand::land(b.buildingUnit, b.buildingUnit->getInitialTilePosition());
 	}
+}
+
+bool LiftingManager::enemyUnitsNear(Building b){
+	if (b.buildingUnit->getUnitsInRadius(400, Filter::IsEnemy).size() > 0){
+		return true;
+	}
+	return false;
+}
+
+bool LiftingManager::myUnitsNear(Building b){
+	if (b.buildingUnit->getUnitsInRadius(50, Filter::IsOwned).size() > 0){
+		return true;
+	}
+	return false;
+}
+
+bool LiftingManager::unitsTryingToGoThroughWall(Building b){
+	UnitData myUnitData = InformationManager::Instance().getUnitData(BWAPI::Broodwar->self());
+	for (auto myUnit : myUnitData.getUnits()){
+		if (!myUnit.second.type.isBuilding() && myUnit.first->isMoving() && myUnitsNear(b)){
+			return true;
+		}
+	}
+	return false;
 }

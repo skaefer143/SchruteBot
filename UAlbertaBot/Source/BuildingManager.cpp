@@ -277,7 +277,6 @@ void BuildingManager::checkWallLiftStatus(){
 		}
 		else if (b.buildingUnit->isCompleted() && b.isPartOfWall && !b.buildingUnit->isLifted() 
 			&& b.buildingUnit->getType().getRace() == BWAPI::Races::Terran){
-
 			//lift wall, in lifting manager
 			liftMan.checkForLiftOff(b);
 		}
