@@ -153,6 +153,9 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\GhostManager.cpp">
+      <Filter>game\combat\micro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\GameHistory.hpp">
       <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GhostManager.h">
+      <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
