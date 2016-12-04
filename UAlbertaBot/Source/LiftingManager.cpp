@@ -18,11 +18,12 @@ void LiftingManager::update(){
 				(b.buildingUnit->getType() == BWAPI::UnitTypes::Terran_Barracks
 				|| b.buildingUnit->getType() == BWAPI::UnitTypes::Terran_Factory)){
 				//checks if building is a Barracks or a Factory, only two buildings in wall we are potentially working with
-
+				
 				if (b.buildingUnit->isLifted()){
+					//check if we need to get set down.
 					checkForSetDown(b);
 				}
-				else if (b.buildingUnit->isCompleted() && b.isPartOfWall && !b.buildingUnit->isLifted()
+				else if (b.buildingUnit->isCompleted() && !b.buildingUnit->isLifted()
 					&& b.buildingUnit->getType().getRace() == BWAPI::Races::Terran){
 					//lift wall, in lifting manager
 					checkForLiftOff(b);
@@ -48,7 +49,6 @@ void LiftingManager::checkForLiftOff(Building b){
 void LiftingManager::checkForSetDown(Building b){
 	//set down a wall building
 
-	//double checks that wall is lifted
 	//if enemies are nearby, or no units are attempting to get through wall
 	TilePosition landingPosition = b.finalPosition;
 	if (enemyUnitsNear(b)){
@@ -73,8 +73,8 @@ bool LiftingManager::enemyUnitsNear(Building b){
 bool LiftingManager::myUnitsNear(Building b){
 	Unitset nearbyUnits = b.buildingUnit->getUnitsInRadius(100, Filter::IsOwned);
 	for (auto unit : nearbyUnits){
-		if (unit->isMoving() && unit->canMove()){
-			//check if unit is moving, so it's not a building
+		if (unit->canMove()){
+			//check if unit can move, so it's not a building
 			return true;
 		}
 	}

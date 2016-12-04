@@ -14,6 +14,7 @@ namespace UAlbertaBot
 		void	update();
 
 	private:
+		bool	_inTheProcessOfLanding = false;
 
 		void	checkForLiftOff(Building b);
 		void	checkForSetDown(Building b);
