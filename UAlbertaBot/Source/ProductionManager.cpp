@@ -98,6 +98,20 @@ void ProductionManager::update()
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
         }
+
+		if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && BWAPI::Broodwar->self()->completedUnitCount() >= 1){
+				//armory implies vehicle usage
+				//so get vehicle 1,1
+			BWAPI::Player self = BWAPI::Broodwar->self();
+			if (self->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 1 
+							&& !self->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons)){
+				_queue.queueAsLowestPriority(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, false);
+			}
+			else if (self->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 1
+				&& !self->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Plating)){
+				_queue.queueAsLowestPriority(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, false);
+			}
+		}
         
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {

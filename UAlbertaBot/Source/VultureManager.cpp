@@ -16,7 +16,7 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 	std::copy_if(targets.begin(), targets.end(), std::inserter(vultureTargets, vultureTargets.end()),
 		[](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
 
-//expand to find number
+
 	bool haveSpider = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines);
 
 
@@ -60,27 +60,40 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 
 
-
-				//buildings and workers have priority 5 or less
-				//dont waste time on them; target workers
-				if (getAttackPriority(vulture, target) < 6){
-					//if we have mines and are targeting a worker bomb it
-					if (target->getType().isWorker() && haveSpider && vulture->getSpiderMineCount() > 0){
+				if (target->getType().isWorker() ){
+					if (haveSpider && vulture->getSpiderMineCount() > 0 && vultures.size() < 3){
+						//if we have mines and are targeting a worker bomb it
+						//dont bunch up by explosives
 						Micro::SmartLaySpiderMine(vulture, target->getPosition());
-					}else{
+					}
+					else if (haveSpider){
+						//Should move the vulture back
+						Micro::MutaDanceTarget(vulture, target);
+					}
+					else
+					{
+						Micro::SmartAttackUnit(vulture, target);
+					}
+				}
+				else //dont waste time on buildings; target workers
+				if (target->getType().isBuilding()){
+					if (order.getPosition().getDistance(vulture->getPosition()) > 200){
+						Micro::SmartMove(vulture, order.getPosition());
+					}
+					else{
 						Micro::SmartAttackUnit(vulture, target);
 					}
 				}
 				else{
 					// kite the target
-					Micro::MutaDanceTarget(vulture, target);
+					VultureManager::vultureDanceTarget(vulture, target);
 				}
 			}
 			else
 				// if there are no targets
 			{
 //				probably causes units to get stuck by chokepoints
-				int smc = vulture->getSpiderMineCount();
+
 				if (haveSpider && vulture->getSpiderMineCount() > 2 && vultureNearChokepoint)
 				{
 					Micro::SmartLaySpiderMine(vulture, vulture->getPosition());
@@ -264,6 +277,59 @@ BWAPI::Broodwar->setScreenPosition(regroupPosition - BWAPI::Position(320, 180));
 		else
 		{
 			Micro::SmartAttackMove(vulture, vulture->getPosition());
+		}
+	}
+}
+
+void VultureManager::vultureDanceTarget(BWAPI::Unit vulture, BWAPI::Unit target)
+{
+	UAB_ASSERT(vulture, "vultureDanceTarget: vulture not valid");
+	UAB_ASSERT(target, "vultureDanceTarget: Target not valid");
+
+	if (!vulture || !target)
+	{
+		return;
+	}
+
+	const int cooldown = vulture->getType().groundWeapon().damageCooldown();
+	const int latency = BWAPI::Broodwar->getLatency();
+	const double speed = vulture->getType().topSpeed();
+	const double range = vulture->getType().groundWeapon().maxRange();
+	const double distanceToTarget = vulture->getDistance(target);
+	const double distanceToFiringRange = std::max(distanceToTarget - range, 0.0);
+	const double timeToEnterFiringRange = distanceToFiringRange / speed;
+	const int framesToAttack = static_cast<int>(timeToEnterFiringRange)+2 * latency;
+
+	// How many frames are left before we can attack?
+	const int currentCooldown = vulture->isStartingAttack() ? cooldown : vulture->getGroundWeaponCooldown();
+
+	BWAPI::Position fleeVector = Micro::GetKiteVector(target, vulture);
+	BWAPI::Position moveToPosition(vulture->getPosition() + fleeVector);
+
+	bool isThreat = vulture->getType().isFlyer() ? target->getType().airWeapon() != BWAPI::WeaponTypes::None : target->getType().groundWeapon() != BWAPI::WeaponTypes::None;
+
+	// If we can attack by the time we reach our firing range
+	if (currentCooldown <= framesToAttack)
+	{
+		if (isThreat){
+			// Move towards and attack the target
+			vulture->attack(target);
+		}
+		else{
+			//do nothing
+		}// Otherwise we cannot attack and should temporarily back off
+	}
+	else	{
+		// Determine direction to flee
+		// Determine point to flee to
+		if (moveToPosition.isValid()){
+			bool haveSpider = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines);
+			if (!haveSpider)			{
+				vulture->rightClick(moveToPosition);
+			}
+			else{
+				Micro::SmartLaySpiderMine(vulture, moveToPosition);
+			}
 		}
 	}
 }
