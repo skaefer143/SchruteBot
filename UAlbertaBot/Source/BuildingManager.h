@@ -50,6 +50,8 @@ public:
 
     bool                isBeingBuilt(BWAPI::UnitType type);
 
+	std::vector<Building>	buildingsWeHaveBuilt;
+
     std::vector<BWAPI::UnitType> buildingsQueued();
 };
 }

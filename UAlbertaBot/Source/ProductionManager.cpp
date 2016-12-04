@@ -243,7 +243,6 @@ void ProductionManager::manageBuildOrderQueue()
 					}
 					else{
 						desiredPosition = _supply1Location;
-						_supply1Built = true;
 					}
 				}
 				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Factory).getName()){
@@ -447,6 +446,12 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
 			//send the building task, but with our wall build location!
 			BWAPI::Broodwar->printf("Making building in wall at coordinates: x:%d y:%d", BWAPI::Position(_wallBuildingLocation).x, BWAPI::Position(_wallBuildingLocation).y);
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal, true); //PROBLEM CODE
+			if (_wallBuildingLocation == _supply1Location){
+				_supply1Built = true;
+			} 
+			else if (_wallBuildingLocation == _supply2Location){
+				_supply2Built = true;
+			}
 			_buildingsInWallToBuild--;
 		}
         // send the building task to the building manager

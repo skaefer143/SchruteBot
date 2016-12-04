@@ -14,12 +14,7 @@ void LiftingManager::update(){
 	if (ProductionManager::Instance().getMadeFirstWall()){
 		LiftingManager liftMan = LiftingManager::Instance();
 		UnitData myUnitData = InformationManager::Instance().getUnitData(BWAPI::Broodwar->self());
-		std::vector<BWAPI::Unit> myBuildings;
-		for (auto myUnit : myUnitData.getUnits()){
-			if (myUnit.second.type.isBuilding()){
-				myBuildings.insert(myUnit.second.unit);
-			}
-		}
+		std::vector<Building> myBuildings = BuildingManager::Instance().buildingsWeHaveBuilt;
 		for (Building & b : myBuildings){
 			if (b.isPartOfWall){
 				if (b.buildingUnit->isLifted()){

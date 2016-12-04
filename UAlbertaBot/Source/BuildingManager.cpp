@@ -55,7 +55,7 @@ void BuildingManager::validateWorkersAndBuildings()
 
         if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
         {
-            toRemove.push_back(b);
+			toRemove.push_back(b);
         }
     }
 
@@ -261,6 +261,7 @@ void BuildingManager::checkForCompletedBuildings()
 
             // remove this unit from the under construction vector
             toRemove.push_back(b);
+			buildingsWeHaveBuilt.push_back(b);
         }
     }
 

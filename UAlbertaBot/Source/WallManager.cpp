@@ -419,7 +419,7 @@ bool WallManager::checkForPreBuiltWall(){
 			//keeps SCV's out, which means zealots can't get through either. Marines can get through though.
 			SupplyDepot1 = BWAPI::TilePosition(BWAPI::Position(490, 2408));
 			SupplyDepot2 = BWAPI::TilePosition(BWAPI::Position(591, 2380));
-			return true;
+			return false;
 		}
 		
 	}
