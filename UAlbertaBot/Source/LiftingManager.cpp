@@ -1,4 +1,5 @@
 #include "LiftingManager.h"
+#include "ProductionManager.h"
 
 using namespace UAlbertaBot;
 
@@ -6,6 +7,33 @@ LiftingManager & LiftingManager::Instance()
 {
 	static LiftingManager instance;
 	return instance;
+}
+
+void LiftingManager::update(){
+	//check if part of the wall needs to be lifted, to let troops through.
+	if (ProductionManager::Instance().getMadeFirstWall()){
+		LiftingManager liftMan = LiftingManager::Instance();
+		UnitData myUnitData = InformationManager::Instance().getUnitData(BWAPI::Broodwar->self());
+		std::vector<BWAPI::Unit> myBuildings;
+		for (auto myUnit : myUnitData.getUnits()){
+			if (myUnit.second.type.isBuilding()){
+				myBuildings.insert(myUnit.second.unit);
+			}
+		}
+		for (Building & b : myBuildings){
+			if (b.isPartOfWall){
+				if (b.buildingUnit->isLifted()){
+					liftMan.checkForSetDown(b);
+				}
+				else if (b.buildingUnit->isCompleted() && b.isPartOfWall && !b.buildingUnit->isLifted()
+					&& b.buildingUnit->getType().getRace() == BWAPI::Races::Terran){
+					//lift wall, in lifting manager
+					liftMan.checkForLiftOff(b);
+				}
+			}
+		}
+	}
+
 }
 
 void LiftingManager::checkForLiftOff(Building b){

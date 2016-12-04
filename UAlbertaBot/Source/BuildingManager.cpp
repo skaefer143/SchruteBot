@@ -22,7 +22,6 @@ void BuildingManager::update()
     checkForStartedConstruction();          // check to see if any buildings have started construction and update data structures    
     checkForDeadTerranBuilders();           // if we are terran and a building is under construction without a worker, assign a new one    
     checkForCompletedBuildings();           // check to see if any buildings have completed and update data structures
-	checkWallLiftStatus();
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -268,21 +267,6 @@ void BuildingManager::checkForCompletedBuildings()
     removeBuildings(toRemove);
 }
 
-void BuildingManager::checkWallLiftStatus(){
-	//check if part of the wall needs to be lifted, to let troops through.
-	LiftingManager liftMan = LiftingManager::Instance();
-	for (Building & b : _buildings){
-		if (b.buildingUnit->isLifted()){
-			liftMan.checkForSetDown(b);
-		}
-		else if (b.buildingUnit->isCompleted() && b.isPartOfWall && !b.buildingUnit->isLifted() 
-			&& b.buildingUnit->getType().getRace() == BWAPI::Races::Terran){
-			//lift wall, in lifting manager
-			liftMan.checkForLiftOff(b);
-		}
-	}
-	
-}
 
 // COMPLETED
 bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type) 

@@ -55,6 +55,8 @@ void GameCommander::update()
 	_timerManager.startTimer(TimerManager::Scout);
     ScoutManager::Instance().update();
 	_timerManager.stopTimer(TimerManager::Scout);
+
+	LiftingManager::Instance().update();
 		
 	_timerManager.stopTimer(TimerManager::All);
 

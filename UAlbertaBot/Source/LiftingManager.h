@@ -11,9 +11,9 @@ namespace UAlbertaBot
 	class LiftingManager{
 	public:
 		static LiftingManager &	Instance();
+		void	update();
 		void	checkForLiftOff(Building b);
 		void	checkForSetDown(Building b);
-
 
 	private:
 
