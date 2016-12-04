@@ -16,7 +16,7 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 	std::copy_if(targets.begin(), targets.end(), std::inserter(vultureTargets, vultureTargets.end()),
 		[](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
 
-	//int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
+//expand to find number
 	bool haveSpider = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines);
 
 
@@ -24,19 +24,21 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 	// for each vulture
 	for (auto & vulture : vultures)
 	{
-		// train sub units such as scarabs or interceptors
-		//trainSubUnits(rangedUnit);//lay smart mines function in micro
 
 		bool vultureNearChokepoint = false;
-		for (auto & choke : BWTA::getChokepoints())
+		BWTA::Region * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy())->getRegion();
+		
+		
+		for (auto & choke : enemyBaseLocation->getChokepoints())
 		{
-			if (choke->getCenter().getDistance(vulture->getPosition()) < 64)
+			if (choke->getCenter().getDistance(vulture->getPosition()) < 192)
 			{
 				vultureNearChokepoint = true;
+				BWAPI::Broodwar->drawCircleMap(choke->getCenter(), 192, BWAPI::Colors::Green);
 				break;
 			}
 		}
-
+		
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
 		{
@@ -50,18 +52,37 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 				{
 					BWAPI::Broodwar->drawLineMap(vulture->getPosition(), vulture->getTargetPosition(), BWAPI::Colors::Purple);
 				}
-
 				
-				// kite the target
-				Micro::MutaDanceTarget(vulture, target);
+				int tType = target->getType();
+				if ((tType == BWAPI::UnitTypes::Protoss_Photon_Cannon || tType == BWAPI::UnitTypes::Zerg_Sunken_Colony /*|| tType == BWAPI::UnitTypes::Terran_Bunker*/)
+				&& vulture->getDistance(target) < target->getType().groundWeapon().maxRange() && targets.size() <=1){
+					Micro::SmartMove(vulture, enemyBaseLocation->getCenter());
+				}
+
+
+
+				//buildings and workers have priority 5 or less
+				//dont waste time on them; target workers
+				if (getAttackPriority(vulture, target) < 6){
+					//if we have mines and are targeting a worker bomb it
+					if (target->getType().isWorker() && haveSpider && vulture->getSpiderMineCount() > 0){
+						Micro::SmartLaySpiderMine(vulture, target->getPosition());
+					}else{
+						Micro::SmartAttackUnit(vulture, target);
+					}
+				}
+				else{
+					// kite the target
+					Micro::MutaDanceTarget(vulture, target);
+				}
 			}
 			else
 				// if there are no targets
 			{
 //				probably causes units to get stuck by chokepoints
-				if (haveSpider && vultureNearChokepoint)
+				int smc = vulture->getSpiderMineCount();
+				if (haveSpider && vulture->getSpiderMineCount() > 2 && vultureNearChokepoint)
 				{
-
 					Micro::SmartLaySpiderMine(vulture, vulture->getPosition());
 				} 
 
@@ -73,12 +94,24 @@ void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 			}
 		}
+		else if (order.getType() == SquadOrderTypes::Regroup && haveSpider){
+			Micro::SmartLaySpiderMine(vulture, order.getPosition());
+		}
 	}
 }
 
 // get a target for the vulture to attack
 BWAPI::Unit VultureManager::getTarget(BWAPI::Unit vulture, const BWAPI::Unitset & targets)
 {
+	int bestPriorityDistance = 1000000;
+	int bestPriority = 0;
+
+	double bestLTD = 0;
+
+	BWAPI::Unit bestTargetThreatInRange = nullptr;
+	double bestTargetThreatInRangeLTD = 0;
+
+	int highPriority = 0;
 	double closestDist = std::numeric_limits<double>::infinity();
 	BWAPI::Unit closestTarget = nullptr;
 	
@@ -94,12 +127,14 @@ BWAPI::Unit VultureManager::getTarget(BWAPI::Unit vulture, const BWAPI::Unitset 
 
 		double distance = vulture->getDistance(target);
 		double LTD = UnitUtil::CalculateLTD(target, vulture);
+		int priority = getAttackPriority(vulture, target);
 		bool targetIsThreat = LTD > 0;
-//		BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
+		BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
 
 		if (!closestTarget || (targetIsThreat && distance < closestDist))
 		{
 			closestDist = distance;
+			highPriority = priority;
 			closestTarget = target;
 		}
 	}
@@ -190,4 +225,45 @@ BWAPI::Unit VultureManager::closestrangedUnit(BWAPI::Unit target, std::set<BWAPI
 	}
 
 	return closest;
+}
+
+//time to override a non virtual function
+//check squad.cpp to see if this is ever used
+void VultureManager::regroup(const BWAPI::Position & regroupPosition) const
+{
+	BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+	int regroupDistanceFromBase = MapTools::Instance().getGroundDistance(regroupPosition, ourBasePosition);
+
+BWAPI::Broodwar->drawCircleMap(regroupPosition, 10, BWAPI::Colors::Orange);
+BWAPI::Broodwar->setScreenPosition(regroupPosition - BWAPI::Position(320, 180));
+
+	const BWAPI::Unitset & vultures = getUnits();
+	bool haveSpider = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines);
+
+	// for each of the units we have
+	for (auto & vulture : vultures)
+	{
+		int unitDistanceFromBase = MapTools::Instance().getGroundDistance(vulture->getPosition(), ourBasePosition);
+
+		// if the unit is outside the regroup area
+		if (unitDistanceFromBase > regroupDistanceFromBase)
+		{
+			Micro::SmartMove(vulture, ourBasePosition);
+		}
+		else if (vulture->getDistance(regroupPosition) > 100)
+		{
+			if (haveSpider){
+				Micro::SmartLaySpiderMine(vulture, regroupPosition);
+			}
+			else {
+				// regroup it
+				Micro::SmartMove(vulture, regroupPosition);
+			}
+			
+		}
+		else
+		{
+			Micro::SmartAttackMove(vulture, vulture->getPosition());
+		}
+	}
 }

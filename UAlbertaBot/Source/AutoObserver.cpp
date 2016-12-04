@@ -29,7 +29,7 @@ void AutoObserver::onFrame()
 		    }
         }
     }
-
+	/*
     if (pickUnitToFollow)
     {
 	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
@@ -44,7 +44,7 @@ void AutoObserver::onFrame()
 		    }
         }
     }
-
+	*/
     if (pickUnitToFollow)
     {
 	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())

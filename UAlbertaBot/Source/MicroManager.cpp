@@ -121,6 +121,7 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 {
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
     int regroupDistanceFromBase = MapTools::Instance().getGroundDistance(regroupPosition, ourBasePosition);
+	BWAPI::Broodwar->drawCircleMap(regroupPosition, 10, BWAPI::Colors::Orange);
 
 	// for each of the units we have
 	for (auto & unit : _units)
