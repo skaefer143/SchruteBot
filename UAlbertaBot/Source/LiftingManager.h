@@ -12,11 +12,11 @@ namespace UAlbertaBot
 	public:
 		static LiftingManager &	Instance();
 		void	update();
-		void	checkForLiftOff(Building b);
-		void	checkForSetDown(Building b);
 
 	private:
 
+		void	checkForLiftOff(Building b);
+		void	checkForSetDown(Building b);
 		bool	enemyUnitsNear(Building b);
 		bool	myUnitsNear(Building b);
 	};
