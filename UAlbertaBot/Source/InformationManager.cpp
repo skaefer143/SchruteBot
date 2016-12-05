@@ -1,13 +1,21 @@
 #include "Common.h"
 #include "InformationManager.h"
-
 using namespace UAlbertaBot;
 
 InformationManager::InformationManager()
-    : _self(BWAPI::Broodwar->self())
-    , _enemy(BWAPI::Broodwar->enemy())
+: _self(BWAPI::Broodwar->self())
+, _enemy(BWAPI::Broodwar->enemy())
 {
 	initializeRegionInformation();
+  /*  Position defend = BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter();
+    wall = WallManager(BWAPI::TilePosition(defend));
+    if (!wall.goodWall()){
+        wall.findWall(0);
+    }
+    if (wall.goodWall()){
+        Broodwar->printf("Barracks: %d, %d", wall.getBarracks().x, wall.getBarracks().y);
+    }*/
+    
 }
 
 InformationManager & InformationManager::Instance() 
@@ -20,6 +28,23 @@ void InformationManager::update()
 {
 	updateUnitInfo();
 	updateBaseLocationInfo();
+   
+	/*print our chokepoint crap
+	int chokepointNum = 0;
+	for (std::set<BWTA::Chokepoint*>::iterator it = _mainBaseChokepoints.begin(); it != _mainBaseChokepoints.end(); ++it){
+		chokepointNum++;
+		BWAPI::Broodwar->printf("Chokepoint #%d around our base: x:%d y:%d", chokepointNum, (*it)->getCenter().x, (*it)->getCenter().y);
+	}
+	BWAPI::Broodwar->printf("Nearest chokepoint around our base: x:%d y:%d", BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter().x, BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter().y);
+	BWAPI::Broodwar->printf("Center of base: x:%d y:%d", BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition())->getCenter().x, BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition())->getCenter().y);
+	for (std::set<BWTA::Chokepoint*>::const_iterator c = _mainBaseChokepoints.begin(); c != _mainBaseChokepoints.end(); c++)
+	{
+		BWAPI::Position point1 = (*c)->getSides().first;
+		BWAPI::Position point2 = (*c)->getSides().second;
+		BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
+		BWAPI::Broodwar->printf("First side: x:%d y:%d", point1.x, point1.y);
+		BWAPI::Broodwar->printf("Second side: x:%d y:%d", point2.x, point2.y);
+	}*/
 }
 
 void InformationManager::updateUnitInfo() 
@@ -47,6 +72,10 @@ void InformationManager::initializeRegionInformation()
 
 	// push that region into our occupied vector
 	updateOccupiedRegions(BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition()), BWAPI::Broodwar->self());
+
+	//get the chokepoints in our region
+	_mainBaseChokepoints = BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition())->getChokepoints();
+	
 }
 
 
@@ -442,8 +471,23 @@ void InformationManager::drawMapInformation()
 			BWAPI::Position point1 = (*c)->getSides().first;
 			BWAPI::Position point2 = (*c)->getSides().second;
 			BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
+			BWAPI::Broodwar->drawCircleMap(point1, 8, BWAPI::Colors::Blue); //point 1 is blue
+			BWAPI::Broodwar->drawCircleMap(point2, 8, BWAPI::Colors::Yellow); //point 2 is yellow
 		}
 	}
+
+
+	//draw the place we want to build our temp wall (test)
+	BWTA::Region* ourRegion = BWTA::getRegion(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
+	BWTA::Region* otherRegion = *(ourRegion->getReachableRegions().begin()); //gets second region beyond our chokepoint
+	BWAPI::TilePosition desiredPosition = BWAPI::TilePosition(otherRegion->getCenter());
+	//draw the region centers
+	BWAPI::Position ourRegionPoint = ourRegion->getCenter();
+	BWAPI::Position otherRegionPoint = otherRegion->getCenter();
+	BWAPI::Broodwar->drawCircleMap(ourRegionPoint, 8, BWAPI::Colors::Blue); //point 1 is blue
+	BWAPI::Broodwar->drawCircleMap(otherRegionPoint, 8, BWAPI::Colors::Yellow); //point 2 is yellow
+	//draw the desiredTilePosition in Red
+	BWAPI::Broodwar->drawBoxMap(desiredPosition.x * 32, desiredPosition.y * 32, desiredPosition.x * 32 + 4 * 32, desiredPosition.y * 32 + 2 * 32, BWAPI::Colors::Red);
 }
 
 void InformationManager::updateUnit(BWAPI::Unit unit)

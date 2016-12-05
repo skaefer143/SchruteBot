@@ -5,6 +5,8 @@
 #include "BuildingPlacer.h"
 #include "InformationManager.h"
 #include "MapTools.h"
+#include "WallManager.H"
+#include "LiftingManager.h"
 
 namespace UAlbertaBot
 {
@@ -39,7 +41,7 @@ public:
     void                update();
     void                onUnitMorph(BWAPI::Unit unit);
     void                onUnitDestroy(BWAPI::Unit unit);
-    void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);
+    void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal,bool isPartOfWall = false);
     void                drawBuildingInformation(int x,int y);
     BWAPI::TilePosition getBuildingLocation(const Building & b);
 
@@ -47,6 +49,8 @@ public:
     int                 getReservedGas();
 
     bool                isBeingBuilt(BWAPI::UnitType type);
+
+	std::vector<Building>	buildingsWeHaveBuilt;
 
     std::vector<BWAPI::UnitType> buildingsQueued();
 };

@@ -20,6 +20,18 @@ class ProductionManager
     bool                _enemyCloakedDetected;
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
+
+	bool				_madeFirstWall;
+	bool				_currentlyBuildingWall;
+	BWAPI::TilePosition	_wallBuildingLocation;
+	BWAPI::TilePosition	_barrackLocation;
+	BWAPI::TilePosition	_supply1Location;
+	bool				_supply1Built = false;
+	BWAPI::TilePosition	_supply2Location;
+	bool				_supply2Built = false;
+	BWAPI::TilePosition	_factoryLocation;
+	int					_buildingsInWallToBuild;
+	WallManager			_wallMan;
     
     BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -53,6 +65,8 @@ public:
     void        drawProductionInformation(int x,int y);
     void        setSearchGoal(MetaPairVector & goal);
     void        queueGasSteal();
+	bool		getMadeFirstWall() const;
+	bool		getCurrentlyBuildingWall() const;
 
     BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
 };
