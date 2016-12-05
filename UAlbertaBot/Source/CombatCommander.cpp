@@ -39,11 +39,11 @@ void CombatCommander::initializeSquads()
     }
 
 	// add a defensive squad is we are using a tank defence (or walling) strategy
-	if (Config::Strategy::StrategyName == "Terran_TankDefense")
-	{
-		SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, ourBasePosition, 800, "To the wall!");
-		_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenseOrder, TankDefensePriority));
-	}
+	//if (Config::Strategy::StrategyName == "Terran_TankDefense")
+	//{
+	SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, ourBasePosition, 800, "To the wall!");
+	_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenseOrder, TankDefensePriority));
+	//}
 
     _initialized = true;
 }
@@ -246,11 +246,11 @@ void CombatCommander::updateScoutDefenseSquad()
 void CombatCommander::updateTankDefenseSquad()
 {
 	// uncoment to disable. once uncomented, the strategy name can be changed
-	if (Config::Strategy::StrategyName != "Terran_TankDefense")
+	//if (Config::Strategy::StrategyName != "Terran_TankDefense")
 	//if (Config::Strategy::StrategyName != "Terran_TankPush")
-	{
-		return;
-	}
+	//{
+	//	return;
+	//}
 
 	Squad & tankDSquad = _squadData.getSquad("TankDefenders");
 	//int numberOfTanks = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
