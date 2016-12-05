@@ -10,7 +10,7 @@ BuildingManager::BuildingManager()
     , _reservedMinerals(0)
     , _reservedGas(0)
 {
-
+ 
 }
 
 // gets called every frame from GameCommander
@@ -55,7 +55,7 @@ void BuildingManager::validateWorkersAndBuildings()
 
         if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
         {
-            toRemove.push_back(b);
+			toRemove.push_back(b);
         }
     }
 
@@ -88,13 +88,19 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 
             b.builderUnit = workerToAssign;
 
-            BWAPI::TilePosition testLocation = getBuildingLocation(b);
-            if (!testLocation.isValid())
-            {
-                continue;
-            }
+			if (b.isPartOfWall){
+				//we trust that we have error checked this already, and that the tile position is within the maps bounds and is valid
+				b.finalPosition = b.desiredPosition;
+			}
+			else{
+				BWAPI::TilePosition testLocation = getBuildingLocation(b);
+				if (!testLocation.isValid())
+				{
+					continue;
+				}
 
-            b.finalPosition = testLocation;
+				b.finalPosition = testLocation;
+			}
 
             // reserve this building's space
             BuildingPlacer::Instance().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
@@ -255,11 +261,13 @@ void BuildingManager::checkForCompletedBuildings()
 
             // remove this unit from the under construction vector
             toRemove.push_back(b);
+			buildingsWeHaveBuilt.push_back(b);
         }
     }
 
     removeBuildings(toRemove);
 }
+
 
 // COMPLETED
 bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type) 
@@ -277,12 +285,12 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 }
 
 // add a new building to be constructed
-void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
+void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal, bool isPartOfWall)
 {
     _reservedMinerals += type.mineralPrice();
     _reservedGas	     += type.gasPrice();
 
-    Building b(type, desiredLocation);
+    Building b(type, desiredLocation, isPartOfWall);
     b.isGasSteal = isGasSteal;
     b.status = BuildingStatus::Unassigned;
 

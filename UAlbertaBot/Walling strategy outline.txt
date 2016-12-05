@@ -5,3 +5,33 @@ Need to adjust Build Order (I think?) to build more buildings, and place them at
 Then, we figure out how to make the AI place the buidlings at the choke point on our side, so that we effectively wall our base.
 Also, if under attack, get our SCV's to help repair our buildings at the chokepoint.
 
+
+
+Storm's coding notes:
+Goal for now: see if I'm able to get workers to randomly place down a supply depot and barracks to simulate a wall.
+
+
+
+Added buildings for walling into queue in ProductionManagers update() function, if we have UseWallingAsTerran set in the 
+Config.cpp file. ManageBuildOrderQueue() figures out if we have a worker available to build our building. 
+If we can make it and there is a worker, it creates the building in the create() function. 
+Figuring out how to set where these buildings should be built. Getting building location now is done in the predictWorkerMovement()
+function, and gets the proposed building location from BuildingManager::Instance().getBuildingLocation(b), with b
+as the building we want. 
+GetBuildingLocation() actually gets the location of where we want to build, by getting our
+player start location, and calling BuildingPlacer::getBuildLocationNear() with a distance. So it finds a certain distance away
+from our desired build location, that is a valid build location. 
+
+**Uses MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+**which can help with finding valid tiles for our Wall!
+
+If we are building a wall, I have sample code in the predictWorkerMovement() function that would be able to 
+return the correct position of each building in the wall.
+
+
+
+Update: 11/21
+For some reason, even by just trying to put building down near our base (even though we are attempting
+to put it in another region, but anyways), the BuildingPlacer::GetBuildingLocationNear function is not working 
+because the closestToBuilding vector is empty. The MapTools::Instance().getClosestTilesTo function is returning
+a location that is invalid. No idea why!!

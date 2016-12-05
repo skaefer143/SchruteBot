@@ -38,12 +38,11 @@ void CombatCommander::initializeSquads()
         _squadData.addSquad("Drop", Squad("Drop", zealotDrop, DropPriority));
     }
 
-	// add a defensive squad is we are using a tank defence (or walling) strategy
-	//if (Config::Strategy::StrategyName == "Terran_TankDefense")
-	//{
+	// add a defensive tank squad 
+	
 	SquadOrder tankDefenseOrder(SquadOrderTypes::WallDefend, ourBasePosition, 800, "To the wall!");
 	_squadData.addSquad("TankDefenders", Squad("TankDefenders",tankDefenseOrder, TankDefensePriority));
-	//}
+
 
     _initialized = true;
 }
@@ -106,7 +105,7 @@ void CombatCommander::updateAttackSquads()
         }
 
         // get every unit of a lower priority and put it into the attack squad
-        if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+		if (!unit->getType().isWorker() /*&& !unit->getType()==BWAPI::UnitTypes::Terran_Vulture_Spider_Mine */&& (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
         {
             _squadData.assignUnitToSquad(unit, mainAttackSquad);
         }
@@ -245,10 +244,7 @@ void CombatCommander::updateScoutDefenseSquad()
 
 void CombatCommander::updateTankDefenseSquad()
 {
-	//if (Config::Strategy::StrategyName != "Terran_TankDefense")
-	//{
-	//	return;
-	//}
+
 
 	Squad & tankDSquad = _squadData.getSquad("TankDefenders");
 	//int numberOfTanks = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);

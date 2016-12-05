@@ -55,6 +55,10 @@ void GameCommander::update()
 	_timerManager.startTimer(TimerManager::Scout);
     ScoutManager::Instance().update();
 	_timerManager.stopTimer(TimerManager::Scout);
+
+	if (Config::Strategy::UseWallingAsTerran){
+		LiftingManager::Instance().update();
+	}
 		
 	_timerManager.stopTimer(TimerManager::All);
 

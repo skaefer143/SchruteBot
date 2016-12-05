@@ -67,6 +67,14 @@ MetaType::MetaType (BWAPI::UnitType t)
 {
 }
 
+MetaType::MetaType(BWAPI::UnitType t, bool partOfWall)
+: _unitType(t)
+, _type(MetaTypes::Unit)
+, _race(t.getRace())
+, _partOfWall(partOfWall)
+{
+}
+
 MetaType::MetaType (BWAPI::TechType t) 
     : _techType(t)
     , _type(MetaTypes::Tech) 
@@ -104,6 +112,10 @@ bool MetaType::isUpgrade() const
 bool MetaType::isCommand() const 
 { 
     return _type == MetaTypes::Command; 
+}
+
+bool MetaType::isPartOfWall() const{
+	return _partOfWall;
 }
 
 const BWAPI::Race & MetaType::getRace() const
