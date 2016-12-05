@@ -212,6 +212,9 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     int numTanks        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
     int numBay          = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay);
+	int numGhosts		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Ghost);
+	int numNukes		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile);
+	int numNukeSilos	= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
@@ -242,12 +245,50 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
         goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
     }
+	else if (Config::Strategy::StrategyName == "Terran_TankDefense")
+	{
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 8));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+		//goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+	}
+	else if (Config::Strategy::StrategyName == "Terran_Ghost"){
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Wraith, 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 4));
+
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Command_Center) > BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo)){
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Nuclear_Silo, numNukeSilos + 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo) > BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile)){
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Nuclear_Missile, numNukes + 1));
+		}
+		
+	}
     else
     {
         BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
-
+	// add Science Vessel to the goal if the enemy has cloaked units
+	if (InformationManager::Instance().enemyHasCloakedUnits())
+	{
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Starport) == 0){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Starport, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Starport) > 0 && BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Science_Facility) == 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Facility, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Science_Facility) > 0 && BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Control_Tower) == 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Control_Tower, 1));
+		}
+		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Control_Tower) > 0){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
+		}
+	}
 
     if (shouldExpandNow())
     {

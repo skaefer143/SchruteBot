@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -126,6 +126,7 @@
     <ClCompile Include="..\source\DetectorManager.cpp" />
     <ClCompile Include="..\Source\Dll.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\GhostManager.cpp" />
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\Source\DistanceMap.hpp" />
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
+    <ClInclude Include="..\Source\GhostManager.h" />
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\Source\Logger.h" />

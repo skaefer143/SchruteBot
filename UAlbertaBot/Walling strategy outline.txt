@@ -1,0 +1,7 @@
+Outline:
+
+Need to scan map for chokepoints, and note them. Store in information manager.
+Need to adjust Build Order (I think?) to build more buildings, and place them at the nearest chokepoint to our base.
+Then, we figure out how to make the AI place the buidlings at the choke point on our side, so that we effectively wall our base.
+Also, if under attack, get our SCV's to help repair our buildings at the chokepoint.
+

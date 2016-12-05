@@ -12,6 +12,8 @@
 #include "TankManager.h"
 #include "VultureManager.h"
 #include "MedicManager.h"
+#include "GhostManager.h"
+
 
 namespace UAlbertaBot
 {
@@ -33,6 +35,7 @@ class Squad
 	TankManager         _tankManager;
 	VultureManager      _vultureManager;
     MedicManager        _medicManager;
+	GhostManager		_ghostManager;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 
