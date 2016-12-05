@@ -266,7 +266,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 		}
 		
 	}
-	/*"Schrute_Offensive"		:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode","Starport", "Vulture", "Vulture", "Science Facility", "Academy", "Vulture", "Vulture", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile"]}*/
+	/*"Schrute_Offensive"		:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Starport", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Science Facility", "Academy", "Vulture", "Vulture", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "Ghost", "Ghost", "Vulture", "Vulture"]}*/
 	else if (Config::Strategy::StrategyName == "Schrute_Offensive")
 	{
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 2));
