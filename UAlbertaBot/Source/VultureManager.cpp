@@ -247,9 +247,6 @@ void VultureManager::regroup(const BWAPI::Position & regroupPosition) const
 	BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 	int regroupDistanceFromBase = MapTools::Instance().getGroundDistance(regroupPosition, ourBasePosition);
 
-BWAPI::Broodwar->drawCircleMap(regroupPosition, 10, BWAPI::Colors::Orange);
-BWAPI::Broodwar->setScreenPosition(regroupPosition - BWAPI::Position(320, 180));
-
 	const BWAPI::Unitset & vultures = getUnits();
 	bool haveSpider = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines);
 

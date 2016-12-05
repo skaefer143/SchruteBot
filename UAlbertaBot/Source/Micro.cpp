@@ -190,7 +190,6 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
     }
 
 	if (unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos)){
-		BWAPI::Broodwar->setScreenPosition(pos - BWAPI::Position(320, 180));
 		unit->useTech(BWAPI::TechTypes::Spider_Mines, BWAPI::PositionOrUnit(pos));
 	}
 }
