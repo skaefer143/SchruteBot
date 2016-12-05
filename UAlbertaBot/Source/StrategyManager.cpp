@@ -273,13 +273,15 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 6));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 2));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 4));
-
+		/*
+		Disabled, as it's unstable
 		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Command_Center) > BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo)){
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Nuclear_Silo, numNukeSilos + 1));
 		}
 		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Silo) > BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Nuclear_Missile)){
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Nuclear_Missile, numNukes + 1));
 		}
+		*/
 	}
     else
     {

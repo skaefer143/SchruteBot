@@ -78,7 +78,6 @@ void UAlbertaBotModule::onFrame()
     char red = '\x08';
     char green = '\x07';
     char white = '\x04';
-	//BWAPI::Broodwar->printf("Marc-Olivier Lajeunesse 1302401");
     if (!Config::ConfigFile::ConfigFileFound)
     {
 		
