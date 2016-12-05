@@ -73,7 +73,7 @@ bool LiftingManager::enemyUnitsNear(Building b){
 bool LiftingManager::myUnitsNear(Building b){
 	Unitset nearbyUnits = b.buildingUnit->getUnitsInRadius(100, Filter::IsOwned);
 	for (auto unit : nearbyUnits){
-		if (unit->canMove()){
+		if (unit->canMove() && !unit->getBuildType().isBuilding()){
 			//check if unit can move, so it's not a building
 			return true;
 		}

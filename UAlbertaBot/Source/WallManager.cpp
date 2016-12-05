@@ -393,7 +393,7 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
 }
 
 bool WallManager::checkForPreBuiltWall(){
-	check for maps we have prebuilt wall coordinates for, and set those as the coordinates
+	//check for maps we have prebuilt wall coordinates for, and set those as the coordinates
 	if (Broodwar->mapFileName() == "(2)Benzene.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		BWAPI::Position startLocation = BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter();
