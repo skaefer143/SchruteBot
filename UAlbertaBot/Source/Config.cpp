@@ -22,6 +22,7 @@ namespace Config
         bool ScoutHarassEnemy               = true;
         bool UseEnemySpecificStrategy       = false;
         bool FoundEnemySpecificStrategy     = false;
+		bool UseWallingAsTerran				= true;
     }
 
     namespace Modules							    
@@ -41,7 +42,7 @@ namespace Config
 
     namespace BotInfo
     {
-        std::string BotName                 = "UAlbertaBot";
+        std::string BotName                 = "SchruteBot";
         std::string Authors                 = "Dave Churchill";
         bool PrintInfoOnStart               = false;
     }

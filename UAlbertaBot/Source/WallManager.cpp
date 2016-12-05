@@ -119,14 +119,14 @@ void WallManager::findWall(int depth){
 
         if (!canWalk){
 
-            debug << *this;
+           // debug << *this;
             //lift barracks somehow, can we still pass through?
             bool canWalk = floodFillInit(0, 0, 2);
 
             if (canWalk){
                 // If it's not blocked off without baracks we're good to go.
                 foundWall = true;
-                debug << *this;
+                //debug << *this;
 
                 Barracks = buildingPos[0];
                 SupplyDepot1 = buildingPos[1];

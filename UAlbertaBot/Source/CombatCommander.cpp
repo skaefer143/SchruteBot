@@ -245,7 +245,9 @@ void CombatCommander::updateScoutDefenseSquad()
 
 void CombatCommander::updateTankDefenseSquad()
 {
+	// uncoment to disable. once uncomented, the strategy name can be changed
 	if (Config::Strategy::StrategyName != "Terran_TankDefense")
+	//if (Config::Strategy::StrategyName != "Terran_TankPush")
 	{
 		return;
 	}
