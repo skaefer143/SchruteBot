@@ -87,13 +87,14 @@ BoundingBox WallManager::buildBoundingBox(BWAPI::TilePosition chokePoint){
             newY = (j + startTileY-1);
 
             // This is the assumption that if the ground distance from one time to another is 32, they can walk from tile a to tile b.
-            bool canWalk = BWTA::getGroundDistance(BWAPI::TilePosition(newX, newY), BWAPI::TilePosition(newX,  newY + 1)) > -1;
+            bool canWalk = BWTA::getGroundDistance(BWAPI::TilePosition(newX, newY), BWAPI::TilePosition(newX,  newY + 1)) == 32;
+            bool canWalkl = BWTA::getGroundDistance(BWAPI::TilePosition(newX, newY), BWAPI::TilePosition(newX-1, newY)) == 32;
             bool topLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4);
             bool topRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4);
             bool bottomLeft = BWAPI::Broodwar->isWalkable(newX * 4, newY * 4 +1);
             bool bottomRight = BWAPI::Broodwar->isWalkable(newX * 4 +1, newY * 4 +1);
             //(topLeft * topLeft * bottomRight * bottomLeft )
-            walkable[j][i] = canWalk;
+            walkable[j][i] = (topLeft * topLeft * bottomRight * bottomLeft) * canWalk || canWalkl;
         }
     }
     return box;
@@ -392,7 +393,7 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
 }
 
 bool WallManager::checkForPreBuiltWall(){
-	//check for maps we have prebuilt wall coordinates for, and set those as the coordinates
+	check for maps we have prebuilt wall coordinates for, and set those as the coordinates
 	if (Broodwar->mapFileName() == "(2)Benzene.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		BWAPI::Position startLocation = BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter();
