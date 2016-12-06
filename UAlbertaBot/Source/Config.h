@@ -39,6 +39,7 @@ namespace Config
         extern bool ScoutHarassEnemy;
         extern bool UseEnemySpecificStrategy;
         extern bool FoundEnemySpecificStrategy;
+		extern bool UseWallingAsTerran;
     }
 
     namespace BWAPIOptions

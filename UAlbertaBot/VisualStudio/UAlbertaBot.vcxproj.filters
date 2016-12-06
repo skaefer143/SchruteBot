@@ -156,6 +156,15 @@
     <ClCompile Include="..\Source\GhostManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\VultureManager.cpp">
+      <Filter>game\combat\micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\WallManager.cpp">
+      <Filter>game\macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\LiftingManager.cpp">
+      <Filter>game\macro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -283,6 +292,15 @@
     </ClInclude>
     <ClInclude Include="..\Source\GhostManager.h">
       <Filter>game\combat\micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\VultureManager.h">
+      <Filter>game\combat\micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\WallManager.H">
+      <Filter>game\macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LiftingManager.h">
+      <Filter>game\macro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

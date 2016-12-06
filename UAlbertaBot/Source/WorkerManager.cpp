@@ -713,6 +713,11 @@ int WorkerManager::getNumMineralWorkers()
 	return workerData.getNumMineralWorkers();	
 }
 
+int WorkerManager::getNumWorkers()
+{
+	return workerData.getNumWorkers();
+}
+
 int WorkerManager::getNumIdleWorkers() 
 {
 	return workerData.getNumIdleWorkers();	

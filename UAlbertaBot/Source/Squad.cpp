@@ -52,18 +52,21 @@ void Squad::update()
 		    BWAPI::Broodwar->drawTextScreen(200, 150, "REGROUP");
         }
 
-		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
+		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Green, true);
         
 		_meleeManager.regroup(regroupPosition);
 		_rangedManager.regroup(regroupPosition);
-        _tankManager.regroup(regroupPosition);
+		_tankManager.regroup(regroupPosition);
+		_vultureManager.execute(_order); // vultures harrass
+		//_vultureManager.regroup(regroupPosition);
         _medicManager.regroup(regroupPosition);
 	}
 	else // otherwise, execute micro
 	{
 		_meleeManager.execute(_order);
 		_rangedManager.execute(_order);
-        _tankManager.execute(_order);
+		_tankManager.execute(_order);
+		_vultureManager.execute(_order);
         _medicManager.execute(_order);
 		_ghostManager.execute(_order);
 		_transportManager.update();
@@ -144,7 +147,8 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset rangedUnits;
 	BWAPI::Unitset detectorUnits;
 	BWAPI::Unitset transportUnits;
-    BWAPI::Unitset tankUnits;
+	BWAPI::Unitset tankUnits;
+	BWAPI::Unitset vultureUnits;
     BWAPI::Unitset medicUnits;
 	BWAPI::Unitset ghostUnits;
 
@@ -157,7 +161,11 @@ void Squad::addUnitsToMicroManagers()
             if (unit->getType() == BWAPI::UnitTypes::Terran_Medic)
             {
                 medicUnits.insert(unit);
-            }
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture)
+			{
+				vultureUnits.insert(unit);
+			}
 			//select tank units
             else if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode || unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
             {
@@ -195,7 +203,8 @@ void Squad::addUnitsToMicroManagers()
 	_rangedManager.setUnits(rangedUnits);
 	_detectorManager.setUnits(detectorUnits);
 	_transportManager.setUnits(transportUnits);
-    _tankManager.setUnits(tankUnits);
+	_tankManager.setUnits(tankUnits);
+	_vultureManager.setUnits(vultureUnits);
     _medicManager.setUnits(medicUnits);
 	_ghostManager.setUnits(ghostUnits);
 }

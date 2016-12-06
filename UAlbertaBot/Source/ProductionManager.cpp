@@ -6,8 +6,18 @@ ProductionManager::ProductionManager()
 	: _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
+	, _madeFirstWall(false)
+	, _currentlyBuildingWall(false)
+	, _buildingsInWallToBuild(0)
 {
     setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+
+	//find chokepoint, pass to wall manager so it can calculate wall building points
+	BWTA::BaseLocation* mainBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
+	Position center = BWTA::getNearestChokepoint(mainBaseLocation->getTilePosition())->getCenter();
+	_wallMan = WallManager(TilePosition(center));
+	_wallMan.findWall(0);
+    //printf("Wall found? %s", _wallMan.goodWall());
 }
 
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
@@ -45,6 +55,61 @@ void ProductionManager::performBuildOrderSearch()
 
 void ProductionManager::update() 
 {
+	if (Config::Debug::DrawProductionInfo){
+		BWAPI::Broodwar->drawBoxMap(_wallMan.box.start.x * 32, _wallMan.box.start.y * 32, _wallMan.box.end.x * 32, _wallMan.box.end.y * 32, BWAPI::Colors::Red);
+		BWAPI::Broodwar->drawBoxMap(_wallMan.getBarracks().x * 32, _wallMan.getBarracks().y * 32, _wallMan.getBarracks().x * 32 + 32, _wallMan.getBarracks().y * 32 + 32, BWAPI::Colors::Yellow);
+		BWAPI::Broodwar->drawBoxMap(_wallMan.getSupplyDepot1().x * 32, _wallMan.getSupplyDepot1().y * 32, _wallMan.getSupplyDepot1().x * 32 + 32, _wallMan.getSupplyDepot1().y * 32 + 32, BWAPI::Colors::Purple);
+		BWAPI::Broodwar->drawBoxMap(_wallMan.getSupplyDepot2().x * 32, _wallMan.getSupplyDepot2().y * 32, _wallMan.getSupplyDepot2().x * 32 + 32, _wallMan.getSupplyDepot2().y * 32 + 32, BWAPI::Colors::Blue);
+	}
+	//turn off currently building wall, if we have built the wall
+	//needs to come before manageBuildOrderQueue(), so we know whether or not walling is done.
+	if (_currentlyBuildingWall && !_madeFirstWall && _buildingsInWallToBuild <= 0){
+		//we have finished building the wall!
+		_currentlyBuildingWall = false;
+		_madeFirstWall = true;
+	}
+
+	//if we haven't built our first wall near our main base yet, build it!
+	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 10) { 
+
+		_currentlyBuildingWall = true;
+
+		if (_wallMan.goodWall()){
+			if (Config::Debug::DrawProductionInfo)
+			{
+				BWAPI::Broodwar->printf("We are building our wall as a Terran.");
+			}
+
+			_buildingsInWallToBuild = 0;
+			//build wall build order
+			//make a barracks and 2 supply depots
+			//will only put barracks and supply1 and supply2 locations, if we found a wall!
+			_supply2Location = _wallMan.getSupplyDepot2();
+			if (_supply2Location.x != 0 && _supply2Location.y != 0){
+				_buildingsInWallToBuild++;
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot, true), true);
+			}
+			_supply1Location = _wallMan.getSupplyDepot1();
+			if (_supply1Location.x != 0 && _supply1Location.y != 0){
+				_buildingsInWallToBuild++;
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot, true), true);
+			}
+			_barrackLocation = _wallMan.getBarracks();
+			if (_barrackLocation.x != 0 && _barrackLocation.y != 0){
+				_buildingsInWallToBuild++;
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks, true), true);
+			}
+			_factoryLocation = _wallMan.getFactory();
+			if (_factoryLocation.x != 0 && _factoryLocation.y != 0){
+				_buildingsInWallToBuild++;
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Factory, true), true);
+			}
+			
+		}
+		
+	}
+
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
     
@@ -98,6 +163,20 @@ void ProductionManager::update()
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
         }
+
+		if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && BWAPI::Broodwar->self()->completedUnitCount() >= 1){
+				//armory implies vehicle usage
+				//so get vehicle 1,1
+			BWAPI::Player self = BWAPI::Broodwar->self();
+			if (self->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 1 
+							&& !self->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons)){
+				_queue.queueAsLowestPriority(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, false);
+			}
+			else if (self->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 1
+				&& !self->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Plating)){
+				_queue.queueAsLowestPriority(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, false);
+			}
+		}
         
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
@@ -161,14 +240,50 @@ void ProductionManager::manageBuildOrderQueue()
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
 			// construct a temporary building object
-			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
-            b.isGasSteal = currentItem.isGasSteal;
+			if (_currentlyBuildingWall){
+				
+				BWAPI::TilePosition desiredPosition = BWAPI::Broodwar->self()->getStartLocation(); 
+				//if our if statements fail,
+				//we will build the building near our base anyways, so the AI doesn't crash
 
-			// set the producer as the closest worker, but do not set its job yet
-			producer = WorkerManager::Instance().getBuilder(b, false);
+				if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Barracks).getName()){
+					desiredPosition = _barrackLocation;
+				}
+				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Supply_Depot).getName()){
+					if (_supply1Built){
+						//requires that supply depot 2 is the last building to build in wall
+						desiredPosition = _supply2Location;
+						_supply2Built = true;
+					}
+					else{
+						desiredPosition = _supply1Location;
+					}
+				}
+				else if (currentItem.metaType.getName() == MetaType(BWAPI::UnitTypes::Terran_Factory).getName()){
+					desiredPosition = _factoryLocation;
+				}
+				//BWAPI::Broodwar->printf("Desired Position for our wall: x:%d y:%d", desiredPosition.x, desiredPosition.y);
+				_wallBuildingLocation = desiredPosition;
+				_haveLocationForThisBuilding = true;
+				Building b(currentItem.metaType.getUnitType(), desiredPosition);
+				b.isGasSteal = currentItem.isGasSteal;
 
-			// predict the worker movement to that building location
-			predictWorkerMovement(b);
+				// set the producer as the closest worker, but do not set its job yet
+				producer = WorkerManager::Instance().getBuilder(b, false);
+
+				// predict the worker movement to that building location
+				predictWorkerMovement(b);
+
+			} else {
+				Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+				b.isGasSteal = currentItem.isGasSteal;
+				// set the producer as the closest worker, but do not set its job yet
+				producer = WorkerManager::Instance().getBuilder(b, false);
+
+				// predict the worker movement to that building location
+				predictWorkerMovement(b);
+			}
+           
 		}
 
 		// if we can make the current item
@@ -341,8 +456,22 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
         && !t.getUnitType().isAddon())
     {
+		if (_currentlyBuildingWall && _buildingsInWallToBuild > 0 && t.isPartOfWall()){
+			//send the building task, but with our wall build location!
+			BWAPI::Broodwar->printf("Making building in wall at coordinates: x:%d y:%d", BWAPI::Position(_wallBuildingLocation).x, BWAPI::Position(_wallBuildingLocation).y);
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), _wallBuildingLocation, item.isGasSteal, true); //PROBLEM CODE
+			if (_wallBuildingLocation == _supply1Location){
+				_supply1Built = true;
+			} 
+			else if (_wallBuildingLocation == _supply2Location){
+				_supply2Built = true;
+			}
+			_buildingsInWallToBuild--;
+		}
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		else if (!t.isPartOfWall()) {
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		}
     }
     else if (t.getUnitType().isAddon())
     {
@@ -461,9 +590,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
         return;
     }
 
-	// get a possible building location for the building
-	if (!_haveLocationForThisBuilding)
-	{
+	if (!_haveLocationForThisBuilding){
 		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
 	}
 
@@ -509,6 +636,13 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 
 		// tell the worker manager to move this worker
 		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+
+		if (_currentlyBuildingWall){
+			//don't need right now, will most likely need when given location
+			//if this tile is a valid build location, make it our wall building location!
+			//_wallBuildingLocation = _predictedTilePosition;
+			//BWAPI::Broodwar->printf("Set wall building location to coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
+		}
 	}
 }
 
@@ -693,4 +827,14 @@ bool ProductionManager::canPlanBuildOrderNow() const
     }
 
     return true;
+}
+
+//get the _madeFirstWall variable, for our building manager
+bool ProductionManager::getMadeFirstWall() const{
+	return _madeFirstWall;
+}
+
+//get the _currentlyBuildingWall variable, for our building manager
+bool ProductionManager::getCurrentlyBuildingWall() const{
+	return _currentlyBuildingWall;
 }

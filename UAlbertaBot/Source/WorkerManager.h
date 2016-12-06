@@ -40,6 +40,7 @@ public:
     void        drawWorkerInformation(int x,int y);
 
     int         getNumMineralWorkers();
+	int			getNumWorkers();
     int         getNumGasWorkers();
     int         getNumIdleWorkers();
     void        setScoutWorker(BWAPI::Unit worker);

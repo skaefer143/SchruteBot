@@ -1,4 +1,3 @@
-#pragma once;
 
 #include <Common.h>
 #include "MicroManager.h"
@@ -19,6 +18,6 @@ public:
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
 	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets);
 
-	bool shouldNuke();
+	//bool shouldNuke();
 };
 }

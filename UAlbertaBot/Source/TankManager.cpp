@@ -61,9 +61,6 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                     tank->siege();
                 }
                 // otherwise unsiege and move
-                //else if ((!target || (tank->getDistance(target) > siegeTankRange || 
-                //    tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
-				//else if (!target || (tank->getDistance(target) > siegeTankRange) && tank->canUnsiege())
 				else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
                 {
                     tank->unsiege();
@@ -122,12 +119,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 				{
 					tank->siege();
 				}
-				// otherwise unsiege and move
 				
-				//else if ((!target || (tank->getDistance(target) < siegeTankMinRange)) && tank->canUnsiege())
-				//{
-				////	tank->unsiege();
-				//}
 
 
 				// if we're in siege mode just attack the target
@@ -141,7 +133,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 			else
 			{
 				// if we're not near the order position
-				if (tank->getDistance(order.getPosition()) > 500)
+				if (tank->getDistance(order.getPosition()) > 200)
 				{
 					//BWAPI::Broodwar->printf("tank is at %d , %d and is moving to %d , %d", tank->getPosition().x, tank->getPosition().y, order.getPosition().x, order.getPosition().y);
 					if (tank->canUnsiege())

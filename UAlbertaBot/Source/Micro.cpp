@@ -171,7 +171,14 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
 
     if (!unit->canUseTech(BWAPI::TechTypes::Spider_Mines, pos))
     {
-        return;
+		//offset a command centre north and try again
+		BWAPI::Position pos2 = pos - BWAPI::Position(0, 55);
+		if (unit->canUseTech(BWAPI::TechTypes::Spider_Mines, pos2)){
+			pos = pos2;
+		}
+		else{
+			return;
+		}
     }
 
     BWAPI::UnitCommand currentCommand(unit->getLastCommand());
@@ -182,7 +189,10 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
         return;
     }
 
-    unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
+	if (unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos)){
+		BWAPI::Broodwar->setScreenPosition(pos - BWAPI::Position(320, 180));
+		unit->useTech(BWAPI::TechTypes::Spider_Mines, BWAPI::PositionOrUnit(pos));
+	}
 }
 
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
@@ -310,14 +320,19 @@ void Micro::MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target)
 	BWAPI::Position fleeVector = GetKiteVector(target, muta);
 	BWAPI::Position moveToPosition(muta->getPosition() + fleeVector);
 
+	bool isThreat = muta->getType().isFlyer() ? target->getType().airWeapon() != BWAPI::WeaponTypes::None : target->getType().groundWeapon() != BWAPI::WeaponTypes::None;
+
 	// If we can attack by the time we reach our firing range
 	if(currentCooldown <= framesToAttack)
 	{
-		// Move towards and attack the target
-		muta->attack(target);
+		if (isThreat){
+			// Move towards and attack the target
+			muta->attack(target);
+		}else{
+			//do nothing
+		}// Otherwise we cannot attack and should temporarily back off
 	}
-	else // Otherwise we cannot attack and should temporarily back off
-	{
+	else	{
 		// Determine direction to flee
 		// Determine point to flee to
 		if (moveToPosition.isValid()) 

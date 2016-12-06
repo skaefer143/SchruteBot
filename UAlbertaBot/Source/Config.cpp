@@ -7,9 +7,8 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-        //std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
-		//std::string ConfigFileLocation = "E:\\Documents\\university\\cmput350\\project\\ShruteBot\\UAlbertaBot\\UAlbertaBot_Config.txt";
-		std::string ConfigFileLocation = "C:\\ualbertabot\\UAlbertaBot\\UAlbertaBot_Config.txt";
+        std::string ConfigFileLocation      = "bwapi-data/AI/SchruteBot_Config.txt";
+		//std::string ConfigFileLocation = "C:\\ualbertabot\\UAlbertaBot\\UAlbertaBot_Config.txt";
     }
 
     namespace Strategy
@@ -24,6 +23,7 @@ namespace Config
         bool ScoutHarassEnemy               = true;
         bool UseEnemySpecificStrategy       = false;
         bool FoundEnemySpecificStrategy     = false;
+		bool UseWallingAsTerran				= true;
     }
 
     namespace Modules							    
@@ -43,7 +43,7 @@ namespace Config
 
     namespace BotInfo
     {
-        std::string BotName                 = "UAlbertaBot";
+        std::string BotName                 = "SchruteBot";
         std::string Authors                 = "Dave Churchill";
         bool PrintInfoOnStart               = false;
     }
