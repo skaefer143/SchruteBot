@@ -28,23 +28,6 @@ void InformationManager::update()
 {
 	updateUnitInfo();
 	updateBaseLocationInfo();
-   
-	/*print our chokepoint crap
-	int chokepointNum = 0;
-	for (std::set<BWTA::Chokepoint*>::iterator it = _mainBaseChokepoints.begin(); it != _mainBaseChokepoints.end(); ++it){
-		chokepointNum++;
-		BWAPI::Broodwar->printf("Chokepoint #%d around our base: x:%d y:%d", chokepointNum, (*it)->getCenter().x, (*it)->getCenter().y);
-	}
-	BWAPI::Broodwar->printf("Nearest chokepoint around our base: x:%d y:%d", BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter().x, BWTA::getNearestChokepoint(_mainBaseLocations[_self]->getTilePosition())->getCenter().y);
-	BWAPI::Broodwar->printf("Center of base: x:%d y:%d", BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition())->getCenter().x, BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition())->getCenter().y);
-	for (std::set<BWTA::Chokepoint*>::const_iterator c = _mainBaseChokepoints.begin(); c != _mainBaseChokepoints.end(); c++)
-	{
-		BWAPI::Position point1 = (*c)->getSides().first;
-		BWAPI::Position point2 = (*c)->getSides().second;
-		BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
-		BWAPI::Broodwar->printf("First side: x:%d y:%d", point1.x, point1.y);
-		BWAPI::Broodwar->printf("Second side: x:%d y:%d", point2.x, point2.y);
-	}*/
 }
 
 void InformationManager::updateUnitInfo() 

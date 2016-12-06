@@ -27,12 +27,32 @@ CombatCommander.cpp, (added priority for tank defense squad)
 
 StrategyManager.cpp, getTerranBuildOrderGoal
 
-
-
-Storm:
-I made:
-LiftingManager.h, LiftingManager.cpp, 
-
-I changed:
 Config.cpp (added UseWallingAsTerran bool)
-BuildingManager.cpp (
+
+BuildingManager.cpp, assignWorkersToUnassignedBuildings
+BuildingManager.cpp, checkForCompletedBuildings
+BuildingManager.h, added a parameter to addBuildingTask
+BuildingManager.h, added a buildingsWeHaveBuilt vector to track all buildings we have built
+
+GameCommander.cpp, update
+	(updating the lifting manager)
+
+InformationManager.cpp, drawMapInformation
+	wrote some debug code for walling
+
+LiftingManager.cpp
+LiftingManager.h
+
+MetaType.cpp, constructor
+MetaType.cpp, isPartOfWall
+MetaType.h, added _partOfWall bool
+
+ProductionManager.cpp, constructor
+ProductionManager.cpp, update
+ProductionManager.cpp, manageBuildOrderQueue
+ProductionManager.cpp, create
+ProductionManager.cpp, getMadeFirstWall
+ProductionManager.cpp, getCurrentlyBuildingWall
+ProductionManager.h, added some class attributes
+
+BuildingData.h (added isPartOfWall bool to a building object, built another constructor for it)
