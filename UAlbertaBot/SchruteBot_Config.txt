@@ -116,7 +116,7 @@
 
             "Terran_Ghost"			:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Starport", "SCV", "Supply Depot", "SCV", "SCV", "Science Facility", "Academy", "Vulture", "Vulture", "Wraith", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "SCV","Supply Depot", "Ghost", "Ghost"]},
 
-			"Schrute_Offensive"	   :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Starport", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Science Facility", "Academy", "Vulture", "Vulture", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "Ghost", "Ghost", "Vulture", "Vulture"]}
+			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Refinery", "Barracks", "SCV", "SCV", "SCV", "SCV", "Marine", "Marine", "Marine", "Marine", "Factory", "SCV", "SCV", "Machine Shop", "SCV", "SCV", "Supply Depot", "Tank Siege Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture"]}
         }
     }
 }
