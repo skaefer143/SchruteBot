@@ -266,12 +266,15 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 		}
 		
 	}
-	/*"Schrute_Offensive"		:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Starport", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Science Facility", "Academy", "Vulture", "Vulture", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "Ghost", "Ghost", "Vulture", "Vulture"]}*/
+
+//			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Spider Mines", "Starport", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Science Facility", "Academy", "Vulture", "Vulture", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "Ghost", "Ghost", "Vulture", "Vulture"]}
 	else if (Config::Strategy::StrategyName == "Schrute_Offensive")
 	{
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 2));
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 6));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 8));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 2));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Lockdown, 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 4));
 		/*
 		Disabled, as it's unstable
