@@ -4,6 +4,13 @@ using namespace UAlbertaBot;
 
 WallManager::WallManager(){}
 
+// get an instance of this
+WallManager & WallManager::Instance()
+{
+	static WallManager instance;
+	return instance;
+}
+
 WallManager::WallManager(BWAPI::TilePosition defensePoint)//, BWAPI::Region close, BWAPI::Region farSide)
 {
     count = 0;

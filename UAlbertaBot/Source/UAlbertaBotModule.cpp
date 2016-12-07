@@ -59,8 +59,14 @@ void UAlbertaBotModule::onStart()
         if (Config::Modules::UsingStrategyIO)
         {
             StrategyManager::Instance().readResults();
-            StrategyManager::Instance().setLearnedStrategy();
+			StrategyManager::Instance().setLearnedStrategy();
         }
+		if (Config::Strategy::UseWallingAsTerran){
+			//find chokepoint, pass to wall manager so it can calculate wall building points
+			BWTA::BaseLocation* mainBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
+			Position center = BWTA::getNearestChokepoint(mainBaseLocation->getTilePosition())->getCenter();
+			WallManager::Instance() = WallManager(TilePosition(center));
+		}
 	}
 }
 
