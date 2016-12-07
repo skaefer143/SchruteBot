@@ -9,6 +9,9 @@ namespace Config
         bool ConfigFileParsed               = false;
         std::string ConfigFileLocation      = "bwapi-data/AI/SchruteBot_Config.txt";
 		//std::string ConfigFileLocation = "C:\\ualbertabot\\UAlbertaBot\\UAlbertaBot_Config.txt";
+
+		//storms config file location
+		//std::string ConfigFileLocation      = "C:\\STARCRAFT_SOFTWARE\\ShruteBot\\UAlbertaBot\\SchruteBot_Config.txt";
     }
 
     namespace Strategy

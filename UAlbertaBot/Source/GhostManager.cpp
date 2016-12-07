@@ -30,9 +30,9 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 		BWAPI::Unit target = getTarget(ghost, ghostTargets);
 		if (order.getType() == SquadOrderTypes::Attack)
 		{
-			// if attacking, do not attack units
 
-			
+			// if attacking, do not attack units if we have a nuke
+		
 			if (!targets.empty())
 			{
 
@@ -45,6 +45,13 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 
 				//lockdown enemy carriers
 				if ((target->getType() == BWAPI::UnitTypes::Protoss_Carrier) && !(target->isLockedDown()) && (ghost->getEnergy() > (lockdownEnergy + cloakingEnergy))){
+					//maybe check if the tech has been researched or ability is available?
+					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
+				}
+
+				//lockdown enemy tanks
+				if ((target->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode || target->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode) &&
+					!target->isLockedDown() && ghost->getEnergy() > lockdownEnergy){
 					//maybe check if the tech has been researched or ability is available?
 					ghost->useTech(BWAPI::TechTypes::Lockdown, target);
 				}
@@ -100,7 +107,7 @@ void GhostManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 				// kite the target
 				else{
-					Micro::SmartKiteTarget(ghost, target);
+					Micro::SmartAttackUnit(ghost, target);
 				}
 			}
 			else

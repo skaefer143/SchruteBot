@@ -636,13 +636,6 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 
 		// tell the worker manager to move this worker
 		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
-
-		if (_currentlyBuildingWall){
-			//don't need right now, will most likely need when given location
-			//if this tile is a valid build location, make it our wall building location!
-			//_wallBuildingLocation = _predictedTilePosition;
-			//BWAPI::Broodwar->printf("Set wall building location to coordinates: x:%d y:%d", _wallBuildingLocation.x, _wallBuildingLocation.y);
-		}
 	}
 }
 
