@@ -22,6 +22,8 @@ struct BoundingBox{
 
 class WallManager {
 public: 
+	static	WallManager &	    Instance();
+
 	WallManager();
     WallManager(BWAPI::TilePosition defensePoint); //BWAPI::Region close, BWAPI::Region far);
     BoundingBox buildBoundingBox(BWAPI::TilePosition chokePoint);

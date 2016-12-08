@@ -12,10 +12,7 @@ ProductionManager::ProductionManager()
 {
     setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 
-	//find chokepoint, pass to wall manager so it can calculate wall building points
-	BWTA::BaseLocation* mainBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
-	Position center = BWTA::getNearestChokepoint(mainBaseLocation->getTilePosition())->getCenter();
-	_wallMan = WallManager(TilePosition(center));
+	_wallMan = WallManager::Instance();
 	_wallMan.findWall(0);
     //printf("Wall found? %s", _wallMan.goodWall());
 }
