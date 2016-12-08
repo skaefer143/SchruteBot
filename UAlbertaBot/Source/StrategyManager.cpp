@@ -272,9 +272,9 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	{
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 4));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 8));
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 2));
-		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Lockdown, 1));
-		goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
+		//goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Ghost, numGhosts + 2));
+		//goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Lockdown, 1));
+		//goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 4));
 		/*
 		Disabled, as it's unstable

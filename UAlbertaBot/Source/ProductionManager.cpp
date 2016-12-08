@@ -68,7 +68,7 @@ void ProductionManager::update()
 
 	//if we haven't built our first wall near our main base yet, build it!
 	if (!_madeFirstWall && !_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran &&
-		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 10) { 
+		BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && WorkerManager::Instance().getNumWorkers() > 9) { 
 
 		_currentlyBuildingWall = true;
 
@@ -237,7 +237,7 @@ void ProductionManager::manageBuildOrderQueue()
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
 			// construct a temporary building object
-			if (_currentlyBuildingWall){
+			if (_currentlyBuildingWall && Config::Strategy::UseWallingAsTerran){
 				
 				BWAPI::TilePosition desiredPosition = BWAPI::Broodwar->self()->getStartLocation(); 
 				//if our if statements fail,
