@@ -302,7 +302,6 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
         }
     }
 
-
     if ( x < 0 ||(size_t) x >= walkable.size()){
         // Bounds check for x
         return false;
@@ -360,7 +359,9 @@ bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal,
     if (x < 0 ||(size_t) x >= walkable.size()){
         // Bounds check for x
         return false;
-    } else if (y < 0 ||(size_t) y >= walkable.size()){
+
+    } else if (y < 0 || (size_t) y >= walkable.size()){
+
         // Bounds check for y
         return false;
     }
