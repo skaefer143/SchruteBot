@@ -88,10 +88,12 @@ void WorkerManager::handleGasWorkers()
 			// if it's less than we want it to be, fill 'er up
 			for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
 			{
-				BWAPI::Unit gasWorker = getGasWorker(unit);
-				if (gasWorker)
-				{
-					workerData.setWorkerJob(gasWorker, WorkerData::Gas, unit);
+				if (BWAPI::Broodwar->self()->gas() < 800){
+					BWAPI::Unit gasWorker = getGasWorker(unit);
+					if (gasWorker)
+					{
+						workerData.setWorkerJob(gasWorker, WorkerData::Gas, unit);
+					}
 				}
 			}
 		}

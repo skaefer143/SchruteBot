@@ -30,7 +30,7 @@
     "Macro" :
     {
         "BOSSFrameLimit"            : 160,
-        "WorkersPerRefinery"        : 3,
+        "WorkersPerRefinery"        : 2,
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
@@ -116,7 +116,7 @@
 
             "Terran_Ghost"			:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Starport", "SCV", "Supply Depot", "SCV", "SCV", "Science Facility", "Academy", "Vulture", "Vulture", "Wraith", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "SCV","Supply Depot", "Ghost", "Ghost"]},
 
-			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "Refinery", "SCV", "Barracks", "SCV",  "Factory", "SCV", "SCV", "Factory", "SCV", "SCV", "Vulture", "Vulture", "Vulture", "Vulture", "Machine Shop", "Factory", "Machine Shop", "Tank Siege Mode", "Spider Mines", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Vulture", "Vulture"]}
+			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "Refinery", "SCV", "SCV", "Barracks", "SCV",  "Factory", "SCV", "SCV", "Vulture", "Vulture", "SCV", "Factory", "SCV", "SCV", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture", "Machine Shop", "Factory", "Machine Shop", "Tank Siege Mode", "Spider Mines", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Vulture", "Vulture"]}
         }
     }
 }
