@@ -225,7 +225,7 @@ bool WallManager::properWall(int x, int y, int buildingNumber, int depth){
                 if (deltaX < 0 || deltaY < 0){
                     continue;
                 }
-                if (deltaX >= box.map.size() || deltaY >= box.map.size()){
+                if ((size_t) deltaX >= box.map.size() ||(size_t) deltaY >= box.map.size()){
                     continue;
                 }
                 // Check to see if the building will be in a resource zone
@@ -303,11 +303,11 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
     }
 
 
-    if (x < 0 || x >= walkable.size()){
+    if ((size_t) x < 0 ||(size_t x >= walkable.size()){
         // Bounds check for x
         return false;
     }
-    else if (y < 0 || y >= walkable.size()){
+    else if ((size_t) y < 0 || (size_t)y >= walkable.size()){
         // Bounds check for y
         return false;
     } else {
@@ -405,6 +405,7 @@ bool WallManager::checkForPreBuiltWall(){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
 		BWAPI::Position startLocation = BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter();
 		if (startLocation == BWAPI::Position(3683, 541)){
+			Broodwar->printf("top right");
 			//top right corner of map
 			//need a barracks and 2 supply depots
 			//first supply depot at 3536, 1120
@@ -417,6 +418,7 @@ bool WallManager::checkForPreBuiltWall(){
 			return true;
 		}
 		else if (startLocation == BWAPI::Position(405, 3007)){
+			Broodwar->printf("lower left");
 			//DOES NOT WORK, SCV'S CAN'T GET BACK TO BASE, CAUSES GLITCHES
 			//second position, lower left of map
 			//need 2 supply depots, that's it. 
@@ -431,10 +433,12 @@ bool WallManager::checkForPreBuiltWall(){
 	}
 	else if (Broodwar->mapFileName() == "(2)Heartbreak Ridge.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
+		Broodwar->printf("the check works");
 		return false;
 	}
 	else if (Broodwar->mapFileName() == "(2)Destination.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
+		Broodwar->printf("the check works");
 		return false;
 	}
 	Broodwar->printf("%s", Broodwar->mapFileName());
