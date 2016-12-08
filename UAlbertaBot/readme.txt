@@ -11,7 +11,12 @@ GhostManager.cpp, getAttackPriority
 
 TankManager.cpp, executeMicro
 
+VultureManager.h
+VultureManager.cpp, all
+
 MicroManager.cpp, execute
+
+Micro.cpp, SmartLaySpiderMine
 
 Squad.h
 Squad.cpp, update
