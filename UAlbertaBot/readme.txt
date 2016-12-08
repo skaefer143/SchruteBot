@@ -1,5 +1,6 @@
 Compile instructions:
 import project into Visual Studio 2013 and build
+place SchruteBot_Config file in correct location
 
 
 Changes:

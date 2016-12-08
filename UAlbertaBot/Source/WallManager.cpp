@@ -434,15 +434,14 @@ bool WallManager::checkForPreBuiltWall(){
 	}
 	else if (Broodwar->mapFileName() == "(2)Heartbreak Ridge.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
-		Broodwar->printf("the check works");
 		return false;
 	}
-	else if (Broodwar->mapFileName() == "(2)Destination.scx"){
+	else if (Broodwar->mapFileName() == "(4)Andromeda.scx"){
 		//Broodwar->printf("location: x:%d y:%d", BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().x, BWTA::getStartLocation(Broodwar->self())->getRegion()->getCenter().y);
-		Broodwar->printf("the check works");
-		return false;
+		
+		//NO WALL
+		return true;
 	}
-	Broodwar->printf("%s", Broodwar->mapFileName());
 	return false;
 }
 
