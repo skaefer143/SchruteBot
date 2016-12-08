@@ -303,7 +303,7 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
     }
 
 
-    if ((size_t) x < 0 ||(size_t x >= walkable.size()){
+    if ((size_t) x < 0 ||(size_t) x >= walkable.size()){
         // Bounds check for x
         return false;
     }
@@ -357,10 +357,10 @@ bool WallManager::floodFillInit(int x, int y, int barracks){
 bool WallManager::floodFill(const int x, const int y, int tileNumber, int xGoal, int yGoal, int barracks) const{
     int width = BWAPI::Broodwar->mapWidth();
     int height = BWAPI::Broodwar->mapHeight();
-    if (x < 0 || x >= walkable.size()){
+    if (x < 0 ||(size_t) x >= walkable.size()){
         // Bounds check for x
         return false;
-    } else if (y < 0 || y >= walkable.size()){
+    } else if (y < 0 || (size_t) y >= walkable.size()){
         // Bounds check for y
         return false;
     }

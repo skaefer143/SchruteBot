@@ -19,7 +19,7 @@
         "UseSparcraftSimulation"    : true,
         "KiteWithRangedUnits"       : true,
         "KiteLongerRangedUnits"     : ["Mutalisk", "Vulture"],
-        "WorkersDefendRush"         : true,
+        "WorkersDefendRush"         : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
         "InCombatRadius"            : 1000,
@@ -116,8 +116,7 @@
 
             "Terran_Ghost"			:{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Starport", "SCV", "Supply Depot", "SCV", "SCV", "Science Facility", "Academy", "Vulture", "Vulture", "Wraith", "Covert Ops", "Nuclear Silo", "Personnel Cloaking", "Ghost", "Ghost", "Lockdown", "Nuclear Missile", "SCV","Supply Depot", "Ghost", "Ghost"]},
 
-
-			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "SCV", "Refinery", "Barracks", "SCV", "SCV", "SCV", "SCV", "Marine", "Marine", "Marine", "Marine", "Factory", "SCV", "SCV", "Machine Shop", "SCV", "SCV", "Supply Depot", "Tank Siege Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture", "Vulture"]}
+			"Schrute_Offensive" :{"Race" : "Terran", "OpeningBuildOrder":["SCV", "SCV", "SCV", "SCV", "Refinery", "SCV", "Barracks", "SCV",  "Factory", "SCV", "SCV", "Factory", "SCV", "SCV", "Vulture", "Vulture", "Vulture", "Vulture", "Machine Shop", "Factory", "Machine Shop", "Tank Siege Mode", "Spider Mines", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Vulture", "Vulture", "Vulture", "Vulture"]}
         }
     }
 }
