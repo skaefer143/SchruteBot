@@ -61,3 +61,8 @@ ProductionManager.cpp, getCurrentlyBuildingWall
 ProductionManager.h, added some class attributes
 
 BuildingData.h (added isPartOfWall bool to a building object, built another constructor for it)
+
+WallManager.h, Built entire module
+WallManager.cpp, Built entire module
+
+UAlbertaBotModule.cpp, onStart
